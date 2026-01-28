@@ -1,0 +1,14 @@
+{
+  "id": 4,
+  "title": "Stove Fire",
+  "phonics": "Short /u/ in CVC words",
+  "lesson": "Hear the short 'u' - u-u-u like in 'umbrella'. The pattern is letter + u + letter. 'Sun', 'fun', and 'run' are a word family. Let's practice u-words and spray the flames!",
+  "hp": 50,
+  "new": [
+    "sun","fun","bun","run","gun","nun","pup","cup","tub","rub",
+    "bug","dug","hug","rug","mug","jug","tug","lug","cut","but",
+    "hut","nut","bud","mud","dud","bus","fuss","hum","gum","sum",
+    "sub","cub","hub","pug","rut","gut","pun","up","us","yum"
+  ],
+  "trick": ["come","some","done","gone","give","have","does","says","your","who"]
+}

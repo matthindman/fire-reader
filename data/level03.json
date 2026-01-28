@@ -1,0 +1,14 @@
+{
+  "id": 3,
+  "title": "Campfire",
+  "phonics": "Short /o/ in CVC words",
+  "lesson": "This level is short 'o' - o-o-o like in 'octopus'. The pattern is letter + o + letter. 'Dog' and 'log' both have the same middle sound. Let's cool down the campfire with o-words!",
+  "hp": 50,
+  "new": [
+    "cot","dot","hot","pot","lot","not","rot","got","hop","mop",
+    "pop","top","cop","sop","log","dog","fog","hog","jog","box",
+    "fox","ox","rod","nod","pod","sod","mom","tom","job","rob",
+    "sob","bob","bog","cob","lob","mob","jot","tot","con","don"
+  ],
+  "trick": ["said","are","one","two","three","four","five","here","there","where"]
+}

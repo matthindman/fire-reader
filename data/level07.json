@@ -1,0 +1,15 @@
+{
+  "id": 7,
+  "title": "Forest Floor Fire",
+  "phonics": "Digraphs: sh, ch, th, wh, ck",
+  "lesson": "A digraph is two letters that make one new sound. 'sh' is one sound, and 'ch' is one sound. We also use 'th', 'wh', and 'ck'. These letter teams work together!",
+  "hp": 50,
+  "new": [
+    "ship","shop","shut","dish","fish","wish","dash","cash","rash","mash",
+    "push","rush","chip","chin","chat","chop","much","such","rich","chest",
+    "chick","munch","lunch","pinch","thin","this","that","with","bath","math",
+    "path","moth","both","then","them","what","when","which","wham","whip",
+    "duck","luck","back","sack","pack","tick","sock","rock","lick","kick"
+  ],
+  "trick": []
+}

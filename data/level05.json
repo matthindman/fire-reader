@@ -1,0 +1,14 @@
+{
+  "id": 5,
+  "title": "Car Fire",
+  "phonics": "Short /e/ in CVC and CVCC words",
+  "lesson": "Short 'e' sounds like e-e-e in 'elephant'. We can read many words with the same pattern. 'Red', 'bed', and 'fed' change only the first letter. Read carefully and the fire will go out!",
+  "hp": 50,
+  "new": [
+    "set","get","let","met","net","pet","vet","wet","bet","yet",
+    "bed","fed","red","led","hen","pen","ten","den","men","leg",
+    "beg","peg","jet","gem","hem","web","wed","end","mess","less",
+    "nest","rest","test","bell","tell","sell","well","fell","kept","next"
+  ],
+  "trick": ["they","this","that","with","when","where","why","from","again","friend"]
+}

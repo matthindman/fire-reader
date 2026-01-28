@@ -1,0 +1,15 @@
+{
+  "id": 9,
+  "title": "Office-Tower Fire",
+  "phonics": "R-controlled vowels: ar, or, er, ir, ur",
+  "lesson": "Sometimes 'r' changes a vowel sound. We call these r-controlled vowels. 'car' has ar, 'corn' has or, 'her' has er, 'bird' has ir, and 'turn' has ur. Let's practice each sound carefully!",
+  "hp": 50,
+  "new": [
+    "car","far","jar","bar","star","park","dark","hard","farm","yarn",
+    "for","or","corn","fork","horn","storm","short","sort","port","sport",
+    "her","term","fern","perk","jerk","germ","herd","stern","perch","verb",
+    "bird","dirt","girl","shirt","stir","third","first","firm","whirl","skirt",
+    "fur","burn","turn","surf","hurt","curb","curl","blur","burst","purse"
+  ],
+  "trick": []
+}

@@ -1,0 +1,15 @@
+{
+  "id": 6,
+  "title": "Backyard BBQ",
+  "phonics": "Initial blends: st-, sp-, sl-, sn-, sw-",
+  "lesson": "Blends are two consonants that slide together at the start. You still hear both sounds: s-t in 'stop' and s-p in 'spin'. Let's practice starting blends and keep the BBQ safe!",
+  "hp": 50,
+  "new": [
+    "stop","step","stem","stab","stack","stiff","still","staff","stand","stamp",
+    "stag","stun","stub","sting","spot","spit","spin","span","spat","spank",
+    "spill","spell","sped","spud","spun","spilt","slip","slap","slam","sled",
+    "slim","slug","slum","slop","slab","slot","snap","snip","snub","snug",
+    "snob","sniff","snuff","snag","swim","swam","swap","swan","swig","swat"
+  ],
+  "trick": []
+}

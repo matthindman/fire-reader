@@ -1,0 +1,15 @@
+{
+  "id": 8,
+  "title": "Warehouse Blaze",
+  "phonics": "Final blends: -nd, -ng, -nt, -mp, -st",
+  "lesson": "Now we practice blends at the end of words. The last two letters slide together, like 'nd' in 'hand' and 'mp' in 'jump'. Listen for the ending sounds and read the whole word.",
+  "hp": 50,
+  "new": [
+    "sand","hand","band","land","pond","end","bend","send","lend","tend",
+    "sing","ring","wing","king","song","long","bang","rang","hung","sting",
+    "tent","bent","went","hunt","punt","mint","tint","sent","rent","hint",
+    "lamp","camp","damp","ramp","jump","bump","dump","lump","limp","pump",
+    "last","fast","past","mast","best","rest","nest","test","cost","lost"
+  ],
+  "trick": []
+}

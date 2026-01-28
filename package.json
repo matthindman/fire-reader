@@ -1,0 +1,25 @@
+{
+  "name": "fire-reader",
+  "version": "0.3.0",
+  "private": true,
+  "description": "Fire-Reader MVP (Phonics + spaced repetition) - browser game",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "dev": "parcel index.html",
+    "build": "parcel build index.html --public-url ./",
+    "build:debug": "parcel build index.html --public-url ./ --no-optimize",
+    "build:zip": "npm run build && (cd dist && zip -r ../fire-reader-dist.zip .)",
+    "typecheck": "tsc --noEmit",
+    "atlas": "texturepacker --data assets/atlas.json --sheet assets/atlas.png --format phaser-json-array assets/raw/*.png"
+  },
+  "dependencies": {
+    "idb-keyval": "^6.2.1",
+    "phaser": "^3.70.0"
+  },
+  "devDependencies": {
+    "parcel": "^2.11.0",
+    "typescript": "^5.4.0"
+  }
+}
