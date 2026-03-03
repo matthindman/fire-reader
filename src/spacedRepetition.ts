@@ -59,7 +59,7 @@ export class Scheduler {
     return this.queue.length > 0 ? this.queue[0] : null;
   }
 
-  grade(word: string, rating: Rating) {
+  grade(word: string, rating: Rating, isTargetWord = true) {
     const prev = this.store[word] ? this.store[word] : defaultState();
     const next = applyRating(prev, rating);
     this.store[word] = next;
@@ -75,11 +75,14 @@ export class Scheduler {
       }
     }
 
-    const needsConfirm = rating === 'easy' && next.successes < GAME_CONSTANTS.MASTERY_THRESHOLD;
+    const needsConfirm =
+      rating === 'easy' &&
+      isTargetWord &&
+      next.successes < GAME_CONSTANTS.MASTERY_THRESHOLD;
 
     let delay: number | null = null;
     if (rating === 'fail') delay = GAME_CONSTANTS.REINSERT_DELAY_FAIL;
-    else if (rating === 'hard') delay = GAME_CONSTANTS.REINSERT_DELAY_HARD;
+    else if (rating === 'hard' && isTargetWord) delay = GAME_CONSTANTS.REINSERT_DELAY_HARD;
     else if (needsConfirm) delay = GAME_CONSTANTS.REINSERT_DELAY_EASY_CONFIRM;
 
     if (delay !== null) this.insertAt(Math.min(delay, this.queue.length), word);

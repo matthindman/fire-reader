@@ -4,9 +4,9 @@ This document fills in implementation details that are implied by the TDD but no
 
 ## Session deck and review selection (levels 1-9)
 - Targets are the unique union of level `new` and `trick` words. Boss HP equals the number of unique targets.
-- Review candidates are pulled from saved words with `due <= now` and not in targets, ordered by earliest due, capped at 15. If fewer than 15 are due, fill the remainder by random selection from the remaining saved words (also excluding targets).
+- Review candidates are pulled from saved words with `due <= now` and not in targets, ordered by earliest due, capped at 6.
 - Deck composition interleaves 3-4 targets, then 1 review word (if any remain). Targets and reviews are shuffled independently before interleaving.
-- The scheduler uses the deck order and reinserts words in-session per rating (fail: +3, hard: +6, easy-confirm: +10).
+- The scheduler uses the deck order and reinserts words in-session per rating (fail: +5 for all words, hard: +9 for target words only, easy-confirm disabled by default).
 
 ## Boss HP and clearance
 - HP decreases only when a target word is graded Easy for the first time in the current session.

@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { loadProfile, saveProfile } from '../storage';
+import { loadProfile, saveProfile, STARTING_UNLOCKED_LEVEL } from '../storage';
 import { playCue, setGlobalMute, unlockAudio } from '../audio';
 
 const BTN_STYLE = {
@@ -96,7 +96,7 @@ export default class SettingsModal extends Phaser.Scene {
       yesBtn.on('pointerup', async () => {
         playCue(this, 'ui_confirm');
         cleanup();
-        profile.unlockedLevel = 1;
+        profile.unlockedLevel = STARTING_UNLOCKED_LEVEL;
         profile.words = {};
         await saveProfile(profile);
         this.scene.stop();
