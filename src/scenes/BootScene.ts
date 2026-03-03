@@ -155,6 +155,14 @@ export default class BootScene extends Phaser.Scene {
       return;
     }
 
+    if (!this.textures.exists('particle_dot')) {
+      const gfx = this.add.graphics();
+      gfx.fillStyle(0xffffff, 1);
+      gfx.fillCircle(8, 8, 8);
+      gfx.generateTexture('particle_dot', 16, 16);
+      gfx.destroy();
+    }
+
     loadProfile().then(profile => {
       this.sound.mute = profile.muted;
       setPersistedMuteState(profile.muted);

@@ -44,6 +44,13 @@ export default class GameScene extends Phaser.Scene {
   private onF = () => void this.grade('fail');
   private bossPulseTween?: Phaser.Tweens.Tween;
 
+  private splashEmitter?: Phaser.GameObjects.Particles.ParticleEmitter;
+  private trailEmitter?: Phaser.GameObjects.Particles.ParticleEmitter;
+  private bossRecoilTween?: Phaser.Tweens.Tween;
+  private kidCelebTween?: Phaser.Tweens.Tween;
+  private bossRestX = 780;
+  private kidRestY = 380;
+
   create() {
     this.add.text(480, 270, 'Loading...', { fontSize: '24px', color: '#AAAAAA' }).setOrigin(0.5);
     void this.initAsync();
@@ -69,6 +76,12 @@ export default class GameScene extends Phaser.Scene {
     const levelRaw = this.registry.get('nextLevel') as number | undefined;
     this.levelNum = typeof levelRaw === 'number' ? levelRaw : 1;
     this.levelData = LEVELS[this.levelNum];
+
+    if (this.levelNum > this.profile.unlockedLevel) {
+      this.profile.unlockedLevel = this.levelNum;
+      await saveProfile(this.profile);
+    }
+
     requestGameMusic(this, this.levelNum);
 
     const bgKey = LEVEL_BGS[this.levelNum] ? LEVEL_BGS[this.levelNum] : 'bg1';
@@ -108,6 +121,24 @@ export default class GameScene extends Phaser.Scene {
       });
     }
 
+    this.splashEmitter = this.add.particles(0, 0, 'particle_dot', {
+      speed: { min: 60, max: 180 },
+      scale: { start: 0.5, end: 0 },
+      alpha: { start: 0.9, end: 0 },
+      lifespan: 450,
+      gravityY: 120,
+      emitting: false
+    });
+
+    this.trailEmitter = this.add.particles(0, 0, 'particle_dot', {
+      speed: { min: 10, max: 40 },
+      scale: { start: 0.3, end: 0 },
+      alpha: { start: 0.7, end: 0 },
+      lifespan: 300,
+      gravityY: 50,
+      emitting: false
+    });
+
     this.wordText = this.add.text(480, this.kid.y, '', {
       fontFamily: 'sans-serif',
       fontSize: '72px',
@@ -136,6 +167,14 @@ export default class GameScene extends Phaser.Scene {
       if (this.bossPulseTween) {
         this.bossPulseTween.stop();
         this.bossPulseTween = undefined;
+      }
+      if (this.bossRecoilTween) {
+        this.bossRecoilTween.stop();
+        this.bossRecoilTween = undefined;
+      }
+      if (this.kidCelebTween) {
+        this.kidCelebTween.stop();
+        this.kidCelebTween = undefined;
       }
       void flushSaveProfile();
     });
@@ -179,17 +218,11 @@ export default class GameScene extends Phaser.Scene {
 
   private selectReviewWords(limit: number, exclude: Set<string>): string[] {
     const now = Date.now();
-    const due = Object.entries(this.profile.words)
+    return Object.entries(this.profile.words)
       .filter(([w, s]) => !exclude.has(w) && (s.due ? s.due : 0) <= now)
       .sort((a, b) => (a[1].due ? a[1].due : 0) - (b[1].due ? b[1].due : 0))
       .slice(0, limit)
       .map(([w]) => w);
-
-    if (due.length >= limit) return due;
-
-    const pool = Object.keys(this.profile.words).filter(w => !exclude.has(w) && !due.includes(w));
-    const fill = shuffle(pool).slice(0, limit - due.length);
-    return [...due, ...fill];
   }
 
   private buildInterleavedDeck(targets: string[], review: string[]): string[] {
@@ -247,8 +280,14 @@ export default class GameScene extends Phaser.Scene {
 
   private renderHUD() {
     const frac = this.maxHP > 0 ? this.bossHP / this.maxHP : 1;
-    this.hpBar.width = 320 * Phaser.Math.Clamp(frac, 0, 1);
+    const targetWidth = 320 * Phaser.Math.Clamp(frac, 0, 1);
     this.hpBar.x = 480 - 160;
+    this.tweens.add({
+      targets: this.hpBar,
+      width: targetWidth,
+      duration: 300,
+      ease: 'Quad.easeOut'
+    });
   }
 
   private spray(r: Rating) {
@@ -270,8 +309,23 @@ export default class GameScene extends Phaser.Scene {
       return;
     }
 
-    if (r === 'hard') water.setTint(0xffcc66);
-    if (r === 'easy') water.setTint(0x66ccff);
+    const tintColor = r === 'easy' ? 0x66ccff : 0xffcc66;
+    water.setTint(tintColor);
+
+    // Kid celebration on Easy (fires at t=0)
+    if (r === 'easy') this.kidCelebrate();
+
+    // Water trail particles during flight
+    const trailTimer = this.time.addEvent({
+      delay: 40,
+      repeat: 6,
+      callback: () => {
+        if (this.trailEmitter && water.active) {
+          this.trailEmitter.setParticleTint(tintColor);
+          this.trailEmitter.emitParticleAt(water.x, water.y, 2);
+        }
+      }
+    });
 
     this.tweens.add({
       targets: water,
@@ -280,10 +334,66 @@ export default class GameScene extends Phaser.Scene {
       duration: 280,
       onComplete: () => {
         water.destroy();
+        trailTimer.destroy();
+
+        // Particle splash at impact
+        if (this.splashEmitter) {
+          this.splashEmitter.setParticleTint(tintColor);
+          this.splashEmitter.emitParticleAt(this.boss.x - 40, this.boss.y - 20, r === 'easy' ? 12 : 8);
+        }
+
+        // Boss flash
         if (r === 'easy') {
           this.boss.setTintFill(0xffffff);
           this.time.delayedCall(80, () => this.boss.clearTint());
+
+          // Screen shake on Easy
+          this.cameras.main.shake(120, 0.004);
+
+          // Boss recoil on Easy
+          this.bossRecoil();
         }
+      }
+    });
+  }
+
+  private bossRecoil() {
+    if (this.bossRecoilTween) {
+      this.bossRecoilTween.stop();
+      this.boss.x = this.bossRestX;
+    }
+    this.bossRecoilTween = this.tweens.add({
+      targets: this.boss,
+      x: this.bossRestX + 15,
+      duration: 60,
+      ease: 'Quad.easeOut',
+      yoyo: true,
+      hold: 30,
+      onComplete: () => {
+        this.boss.x = this.bossRestX;
+        this.bossRecoilTween = undefined;
+      }
+    });
+  }
+
+  private kidCelebrate() {
+    if (this.kidCelebTween) {
+      this.kidCelebTween.stop();
+      this.kid.y = this.kidRestY;
+      this.kid.setScale(1.0);
+    }
+    this.kidCelebTween = this.tweens.add({
+      targets: this.kid,
+      y: this.kidRestY - 18,
+      scaleX: 1.12,
+      scaleY: 1.12,
+      duration: 100,
+      ease: 'Quad.easeOut',
+      yoyo: true,
+      onComplete: () => {
+        this.kid.y = this.kidRestY;
+        this.kid.setScale(1.0);
+        this.kidCelebTween = undefined;
       }
     });
   }
@@ -309,7 +419,8 @@ export default class GameScene extends Phaser.Scene {
   private async gradeWord(r: Rating) {
     if (!this.scheduler || !this.currentId) return;
 
-    this.scheduler.grade(this.currentId, r);
+    const isTargetWord = this.bossTargets.has(this.currentId);
+    this.scheduler.grade(this.currentId, r, isTargetWord);
     debouncedSaveProfile(this.profile);
 
     if (r === 'fail') {
@@ -323,7 +434,7 @@ export default class GameScene extends Phaser.Scene {
 
     if (r === 'easy') {
       playCue(this, 'hit_success');
-      if (this.bossTargets.has(this.currentId) && !this.bossCleared.has(this.currentId)) {
+      if (isTargetWord && !this.bossCleared.has(this.currentId)) {
         this.bossCleared.add(this.currentId);
         this.bossHP--;
         playCue(this, 'word_mastered');
