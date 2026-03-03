@@ -9,12 +9,12 @@ export function validateLevels(): boolean {
 
   for (let i = 1; i <= 9; i++) {
     const L = LEVELS[i];
-    const targets = [...(L.new ?? []), ...(L.trick ?? [])];
+    const targets = [...(L.new ? L.new : []), ...(L.trick ? L.trick : [])];
     if (targets.length === 0) { console.error(`[LEVELS] Level ${i} has no targets.`); ok = false; }
 
-    for (const w of (L.new ?? [])) {
+    for (const w of (L.new ? L.new : [])) {
       uniqueTargets.add(w);
-      const locs = newLocations.get(w) ?? [];
+      const locs = newLocations.get(w) ? newLocations.get(w)! : [];
       locs.push(i);
       newLocations.set(w, locs);
     }

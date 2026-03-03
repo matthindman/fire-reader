@@ -22,6 +22,20 @@ function buildFrames(
   return frames;
 }
 
+function buildFramesByIndices(
+  names: Set<string>,
+  prefix: string,
+  indices: number[]
+): Phaser.Types.Animations.AnimationFrame[] {
+  const frames: Phaser.Types.Animations.AnimationFrame[] = [];
+  for (const i of indices) {
+    const f = pickFrame(names, `${prefix}${i}`);
+    if (!f) throw new Error(`Missing atlas frame: ${prefix}${i}`);
+    frames.push({ key: 'atlas', frame: f });
+  }
+  return frames;
+}
+
 export function ensureAnimations(
   anims: Phaser.Animations.AnimationManager,
   texture: Phaser.Textures.Texture
@@ -31,8 +45,8 @@ export function ensureAnimations(
   if (!anims.exists('kid_idle')) {
     anims.create({
       key: 'kid_idle',
-      frames: buildFrames(names, 'kid_idle_', 0, 3),
-      frameRate: 6,
+      frames: buildFramesByIndices(names, 'kid_idle_', [0, 1]),
+      frameRate: 1.5,
       repeat: -1
     });
   }
@@ -43,15 +57,16 @@ export function ensureAnimations(
     if (k === 'dragon') {
       anims.create({
         key: 'dragon',
-        frames: buildFrames(names, 'dragon_', 0, 11),
-        frameRate: 10,
+        frames: buildFramesByIndices(names, 'dragon_', [0, 1, 2, 3, 4, 3, 2, 1]),
+        frameRate: 3,
         repeat: -1
       });
     } else {
       anims.create({
         key: k,
-        frames: buildFrames(names, `${k}_`, 0, 5),
-        frameRate: 8,
+        frames: buildFrames(names, `${k}_`, 0, 4),
+        frameRate: 2,
+        yoyo: true,
         repeat: -1
       });
     }

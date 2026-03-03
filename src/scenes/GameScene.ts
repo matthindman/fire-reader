@@ -7,6 +7,7 @@ import { LEVEL_BGS, LEVEL_BOSS_ANIMS } from '../visuals';
 import { atlasFrame } from '../atlasUtil';
 import SentenceCard from '../ui/SentenceCard';
 import { GAME_CONSTANTS } from '../constants';
+import { duckMusic, playCue, requestGameMusic, unlockAudio } from '../audio';
 
 export default class GameScene extends Phaser.Scene {
   constructor() { super('Game'); }
@@ -41,6 +42,7 @@ export default class GameScene extends Phaser.Scene {
   private onE = () => void this.grade('easy');
   private onH = () => void this.grade('hard');
   private onF = () => void this.grade('fail');
+  private bossPulseTween?: Phaser.Tweens.Tween;
 
   create() {
     this.add.text(480, 270, 'Loading...', { fontSize: '24px', color: '#AAAAAA' }).setOrigin(0.5);
@@ -64,10 +66,12 @@ export default class GameScene extends Phaser.Scene {
     this.sentenceIndex = 0;
 
     this.profile = await loadProfile();
-    this.levelNum = (this.registry.get('nextLevel') as number) ?? 1;
+    const levelRaw = this.registry.get('nextLevel') as number | undefined;
+    this.levelNum = typeof levelRaw === 'number' ? levelRaw : 1;
     this.levelData = LEVELS[this.levelNum];
+    requestGameMusic(this, this.levelNum);
 
-    const bgKey = LEVEL_BGS[this.levelNum] ?? 'bg1';
+    const bgKey = LEVEL_BGS[this.levelNum] ? LEVEL_BGS[this.levelNum] : 'bg1';
     const bg = this.add.image(480, 270, bgKey);
     bg.setDisplaySize(960, 540);
 
@@ -84,12 +88,32 @@ export default class GameScene extends Phaser.Scene {
     this.kid = this.add.sprite(180, 380, 'atlas', atlasFrame('kid_idle_0')).play('kid_idle');
     this.kid.setScale(1.0);
 
-    const bossAnim = LEVEL_BOSS_ANIMS[this.levelNum] ?? 'boss_kitchen';
-    this.boss = this.add.sprite(780, 310, 'atlas', atlasFrame(`${bossAnim}_0`)).play(bossAnim);
-    this.boss.setScale(this.levelNum === 10 ? 1.15 : 1.0);
+    const bossAnim = LEVEL_BOSS_ANIMS[this.levelNum] ? LEVEL_BOSS_ANIMS[this.levelNum] : 'boss_kitchen';
+    if (this.levelNum === 10) {
+      this.boss = this.add.sprite(780, 310, 'atlas', atlasFrame(`${bossAnim}_0`)).play(bossAnim);
+      this.boss.setScale(1.15);
+    } else {
+      this.boss = this.add.sprite(780, 310, 'atlas', atlasFrame(`${bossAnim}_1`));
+      this.boss.setOrigin(0.5, 0.85);
+      this.boss.setScale(1.0);
 
-    this.wordText = this.add.text(480, 220, '', {
-      fontFamily: 'sans-serif', fontSize: '72px', color: '#F5F5F5'
+      this.bossPulseTween = this.tweens.add({
+        targets: this.boss,
+        scaleX: 1.02,
+        scaleY: 1.03,
+        duration: 1400,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut'
+      });
+    }
+
+    this.wordText = this.add.text(480, this.kid.y, '', {
+      fontFamily: 'sans-serif',
+      fontSize: '72px',
+      color: '#F5F5F5',
+      stroke: '#101010',
+      strokeThickness: 10
     }).setOrigin(0.5);
 
     const y = 470;
@@ -97,14 +121,22 @@ export default class GameScene extends Phaser.Scene {
     this.makeButton(480, y, 'Hard (H)', () => void this.grade('hard'));
     this.makeButton(710, y, 'Try again (F)', () => void this.grade('fail'));
 
-    this.input.keyboard?.on('keydown-E', this.onE);
-    this.input.keyboard?.on('keydown-H', this.onH);
-    this.input.keyboard?.on('keydown-F', this.onF);
+    const unlockAudioNow = () => unlockAudio(this);
+    this.input.once('pointerdown', unlockAudioNow);
+    if (this.input.keyboard) this.input.keyboard.once('keydown', unlockAudioNow);
+
+    if (this.input.keyboard) this.input.keyboard.on('keydown-E', this.onE);
+    if (this.input.keyboard) this.input.keyboard.on('keydown-H', this.onH);
+    if (this.input.keyboard) this.input.keyboard.on('keydown-F', this.onF);
 
     this.events.once('shutdown', () => {
-      this.input.keyboard?.off('keydown-E', this.onE);
-      this.input.keyboard?.off('keydown-H', this.onH);
-      this.input.keyboard?.off('keydown-F', this.onF);
+      if (this.input.keyboard) this.input.keyboard.off('keydown-E', this.onE);
+      if (this.input.keyboard) this.input.keyboard.off('keydown-H', this.onH);
+      if (this.input.keyboard) this.input.keyboard.off('keydown-F', this.onF);
+      if (this.bossPulseTween) {
+        this.bossPulseTween.stop();
+        this.bossPulseTween = undefined;
+      }
       void flushSaveProfile();
     });
 
@@ -115,7 +147,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   private initWordMode() {
-    const rawTargets = [...(this.levelData.new ?? []), ...(this.levelData.trick ?? [])];
+    const rawTargets = [...(this.levelData.new ? this.levelData.new : []), ...(this.levelData.trick ? this.levelData.trick : [])];
     const targets = Array.from(new Set(rawTargets));
 
     this.bossTargets = new Set(targets);
@@ -127,11 +159,11 @@ export default class GameScene extends Phaser.Scene {
 
     this.scheduler = new Scheduler(deck, this.profile.words);
     this.currentId = this.scheduler.next();
-    this.setWordText(this.currentId ?? '');
+    this.setWordText(this.currentId ? this.currentId : '');
   }
 
   private initSentenceMode() {
-    const sentences = this.levelData.sentences ?? [];
+    const sentences = this.levelData.sentences ? this.levelData.sentences : [];
     const hp = Math.min(this.levelData.hp, sentences.length);
 
     this.maxHP = this.bossHP = hp;
@@ -148,8 +180,8 @@ export default class GameScene extends Phaser.Scene {
   private selectReviewWords(limit: number, exclude: Set<string>): string[] {
     const now = Date.now();
     const due = Object.entries(this.profile.words)
-      .filter(([w, s]) => !exclude.has(w) && (s.due ?? 0) <= now)
-      .sort((a, b) => (a[1].due ?? 0) - (b[1].due ?? 0))
+      .filter(([w, s]) => !exclude.has(w) && (s.due ? s.due : 0) <= now)
+      .sort((a, b) => (a[1].due ? a[1].due : 0) - (b[1].due ? b[1].due : 0))
       .slice(0, limit)
       .map(([w]) => w);
 
@@ -206,7 +238,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   private setWordText(word: string) {
-    const cleaned = word ?? '';
+    const cleaned = word ? word : '';
     const len = Math.max(1, cleaned.length);
     this.wordText.setAlpha(1);
     this.wordText.setFontSize(Math.max(44, Math.min(72, Math.floor(92 - len * 4))));
@@ -220,7 +252,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   private spray(r: Rating) {
-    this.sound.play('spray');
+    if (r !== 'fail') playCue(this, 'spray_shot');
 
     const water = this.add.image(this.kid.x + 40, this.kid.y - 40, 'atlas', atlasFrame('water'));
     water.setScale(2.5);
@@ -261,6 +293,7 @@ export default class GameScene extends Phaser.Scene {
 
     this.grading = true;
     try {
+      unlockAudio(this);
       this.spray(r);
 
       if (this.levelNum === 10 && this.sentenceCard) {
@@ -280,15 +313,20 @@ export default class GameScene extends Phaser.Scene {
     debouncedSaveProfile(this.profile);
 
     if (r === 'fail') {
-      this.sound.play('fail');
+      playCue(this, 'fail_try_again');
       if (++this.mistakes >= GAME_CONSTANTS.MAX_FAILS_PER_LEVEL) return this.restartLevel();
     }
 
+    if (r === 'hard') {
+      playCue(this, 'hit_minor');
+    }
+
     if (r === 'easy') {
-      this.sound.play('hit');
+      playCue(this, 'hit_success');
       if (this.bossTargets.has(this.currentId) && !this.bossCleared.has(this.currentId)) {
         this.bossCleared.add(this.currentId);
         this.bossHP--;
+        playCue(this, 'word_mastered');
         this.renderHUD();
       }
       if (this.bossHP <= 0) {
@@ -317,17 +355,19 @@ export default class GameScene extends Phaser.Scene {
     }
 
     if (r === 'fail') {
-      this.sound.play('fail');
+      playCue(this, 'fail_try_again');
       if (++this.mistakes >= GAME_CONSTANTS.MAX_FAILS_PER_LEVEL) return this.restartLevel();
       this.sentenceCard!.resetCurrent();
       return;
     }
 
+    if (r === 'hard') playCue(this, 'hit_minor');
+    if (r === 'easy') playCue(this, 'hit_success');
+
     const hasMore = this.sentenceCard!.advance();
     if (hasMore) return;
 
     if (r === 'easy') {
-      this.sound.play('hit');
       this.bossHP--;
       this.renderHUD();
       if (this.bossHP <= 0) {
@@ -348,6 +388,7 @@ export default class GameScene extends Phaser.Scene {
 
   private restartLevel() {
     this.winInProgress = true; // lock input
+    playCue(this, 'stinger_level_fail');
     this.add.rectangle(0, 0, 960, 540, 0x000000, 0.55).setOrigin(0);
     this.add.text(480, 270, "Let's try that fire again!", {
       fontSize: '32px', color: '#FFD700', fontFamily: 'sans-serif'
@@ -368,9 +409,12 @@ export default class GameScene extends Phaser.Scene {
     await saveProfile(this.profile);
 
     this.registry.set('lastLevelCleared', this.levelNum);
-    this.sound.play('victory');
+    duckMusic(this, 3, 320);
+    if (this.levelNum === 10) playCue(this, 'stinger_boss_end');
+    playCue(this, 'level_clear_fanfare');
+    this.time.delayedCall(180, () => playCue(this, 'unlock_reward'));
 
-    this.time.delayedCall(50, () => {
+    this.time.delayedCall(650, () => {
       this.winInProgress = false;
       this.scene.start('Result');
     });
@@ -387,5 +431,5 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 function normalizeWord(token: string): string {
-  return token.toLowerCase().replace(/[^\p{L}]/gu, '');
+  return token.toLowerCase().replace(/[^a-z]/g, '');
 }

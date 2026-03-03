@@ -16,7 +16,7 @@ export function atlasFrame(base: string): string {
   if (atlasFrames.has(`${base}.png`)) return `${base}.png`;
   if (atlasFrames.has(base)) return base;
   const m = Array.from(atlasFrames).find(n => n === base || n === `${base}.png`);
-  return m ?? `${base}.png`;
+  return m ? m : `${base}.png`;
 }
 
 export function sampleAtlasFrames(limit = 20): string[] {

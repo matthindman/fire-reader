@@ -13,7 +13,15 @@
   </style>
 </head>
 <body>
+  <noscript>
+    <div style="max-width:720px;margin:24px auto;padding:16px;background:#320000;color:#ffd6d6;border:1px solid #aa3333;font-family:sans-serif;">
+      JavaScript is not running. Disable Reader mode and open this app in a normal browser tab.
+    </div>
+  </noscript>
   <div id="game"></div>
+  <div id="js-warning" style="position:fixed;left:12px;right:12px;top:12px;z-index:99999;max-width:840px;margin:0 auto;padding:14px;background:#320000;color:#ffd6d6;border:1px solid #aa3333;font-family:sans-serif;">
+    The game script did not start. Open the exact URL printed by <code>npm run dev</code> (or serve <code>dist/</code> over HTTP), not <code>file://</code> or Reader mode.
+  </div>
   <script type="module" src="./src/main.ts"></script>
 </body>
 </html>

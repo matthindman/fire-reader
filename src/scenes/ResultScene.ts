@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { playCue, requestMenuMusic, unlockAudio } from '../audio';
 
 const GEAR_TEXT: Record<number, string> = {
   1: 'Unlocked: Kid helmet sticker',
@@ -17,7 +18,13 @@ export default class ResultScene extends Phaser.Scene {
   constructor() { super('Result'); }
 
   create() {
-    const last = (this.registry.get('lastLevelCleared') as number) ?? 1;
+    requestMenuMusic(this);
+    const unlockAudioNow = () => unlockAudio(this);
+    this.input.once('pointerdown', unlockAudioNow);
+    if (this.input.keyboard) this.input.keyboard.once('keydown', unlockAudioNow);
+
+    const lastRaw = this.registry.get('lastLevelCleared') as number | undefined;
+    const last = typeof lastRaw === 'number' ? lastRaw : 1;
 
     this.add.rectangle(0, 0, 960, 540, 0x000000, 0.65).setOrigin(0);
 
@@ -25,7 +32,7 @@ export default class ResultScene extends Phaser.Scene {
       fontSize: '54px', color: '#00E676', fontFamily: 'sans-serif'
     }).setOrigin(0.5);
 
-    this.add.text(480, 270, GEAR_TEXT[last] ?? 'Great job!', {
+    this.add.text(480, 270, GEAR_TEXT[last] ? GEAR_TEXT[last] : 'Great job!', {
       fontSize: '24px', color: '#FFD700', fontFamily: 'sans-serif'
     }).setOrigin(0.5);
 
@@ -34,6 +41,9 @@ export default class ResultScene extends Phaser.Scene {
       padding: { left: 18, right: 18, top: 8, bottom: 8 }
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
-    back.on('pointerup', () => this.scene.start('Menu'));
+    back.on('pointerup', () => {
+      playCue(this, 'ui_back');
+      this.scene.start('Menu');
+    });
   }
 }

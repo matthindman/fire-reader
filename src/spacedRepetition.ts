@@ -8,7 +8,7 @@ export function defaultState(): WordState {
 }
 
 export function applyRating(prev: WordState | undefined, rating: Rating, now = Date.now()): WordState {
-  const s: WordState = { ...(prev ?? defaultState()) };
+  const s: WordState = { ...(prev ? prev : defaultState()) };
 
   if (rating === 'easy') {
     s.successes += 1;
@@ -56,11 +56,11 @@ export class Scheduler {
   }
 
   next(): string | null {
-    return this.queue[0] ?? null;
+    return this.queue.length > 0 ? this.queue[0] : null;
   }
 
   grade(word: string, rating: Rating) {
-    const prev = this.store[word] ?? defaultState();
+    const prev = this.store[word] ? this.store[word] : defaultState();
     const next = applyRating(prev, rating);
     this.store[word] = next;
 

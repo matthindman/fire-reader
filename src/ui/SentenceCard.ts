@@ -1,12 +1,14 @@
 import Phaser from 'phaser';
 
+const SENTENCE_CARD_DEFAULT_Y = 380;
+
 export default class SentenceCard extends Phaser.GameObjects.Container {
   private tokens: string[] = [];
   private texts: Phaser.GameObjects.Text[] = [];
   private index = 0;
 
   constructor(scene: Phaser.Scene, sentence: string) {
-    super(scene, 480, 220);
+    super(scene, 480, SENTENCE_CARD_DEFAULT_Y);
     scene.add.existing(this);
     this.reset(sentence);
   }
@@ -27,6 +29,8 @@ export default class SentenceCard extends Phaser.GameObjects.Container {
       const t = this.scene.add.text(0, 0, token, {
         fontSize: `${fontSize}px`,
         color: '#FFFFFF',
+        stroke: '#101010',
+        strokeThickness: 6,
         fontFamily: 'sans-serif'
       });
       temp.push(t);
@@ -52,7 +56,7 @@ export default class SentenceCard extends Phaser.GameObjects.Container {
   }
 
   currentWord(): string | null {
-    return this.tokens[this.index] ?? null;
+    return this.index < this.tokens.length ? this.tokens[this.index] : null;
   }
 
   advance(): boolean {

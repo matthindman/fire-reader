@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { LEVELS } from '../data/levels';
-import { ensureBgm } from '../audio';
+import { playCue, requestMenuMusic, unlockAudio } from '../audio';
 import type { LevelData } from '../types';
 
 export default class LessonScene extends Phaser.Scene {
@@ -13,9 +13,10 @@ export default class LessonScene extends Phaser.Scene {
   }
 
   create() {
-    const unlockAudio = () => ensureBgm(this);
-    this.input.once('pointerdown', unlockAudio);
-    this.input.keyboard?.once('keydown', unlockAudio);
+    requestMenuMusic(this);
+    const unlockAudioNow = () => unlockAudio(this);
+    this.input.once('pointerdown', unlockAudioNow);
+    if (this.input.keyboard) this.input.keyboard.once('keydown', unlockAudioNow);
 
     const levelNum = this.registry.get('nextLevel') as number;
     const L = LEVELS[levelNum] as LevelData;
@@ -35,15 +36,21 @@ export default class LessonScene extends Phaser.Scene {
       padding: { left: 22, right: 22, top: 8, bottom: 8 }
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
-    start.on('pointerup', () => this.scene.start('Game'));
+    start.on('pointerup', () => {
+      playCue(this, 'ui_confirm');
+      this.scene.start('Game');
+    });
 
     this.add.text(20, 510, 'Esc: back to menu', { fontSize: '16px', color: '#AAAAAA' });
 
-    this.escHandler = () => this.scene.start('Menu');
-    this.input.keyboard?.on('keydown-ESC', this.escHandler);
+    this.escHandler = () => {
+      playCue(this, 'ui_back');
+      this.scene.start('Menu');
+    };
+    if (this.input.keyboard) this.input.keyboard.on('keydown-ESC', this.escHandler);
 
     this.events.once('shutdown', () => {
-      if (this.escHandler) this.input.keyboard?.off('keydown-ESC', this.escHandler);
+      if (this.escHandler && this.input.keyboard) this.input.keyboard.off('keydown-ESC', this.escHandler);
     });
   }
 }

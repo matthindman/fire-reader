@@ -1,17 +1,18 @@
 import Phaser from 'phaser';
 import { loadProfile, isStorageAvailable } from '../storage';
-import { ensureBgm } from '../audio';
+import { playCue, requestMenuMusic, unlockAudio } from '../audio';
 
 export default class MenuScene extends Phaser.Scene {
   constructor() { super('Menu'); }
 
   create() {
-    const unlockAudio = () => ensureBgm(this);
+    const unlockAudioNow = () => unlockAudio(this);
+    requestMenuMusic(this);
 
-    this.input.once('pointerdown', unlockAudio);
-    this.input.keyboard?.once('keydown', unlockAudio);
+    this.input.once('pointerdown', unlockAudioNow);
+    if (this.input.keyboard) this.input.keyboard.once('keydown', unlockAudioNow);
 
-    const touchUnlock = () => unlockAudio();
+    const touchUnlock = () => unlockAudioNow();
     this.game.canvas.addEventListener('touchstart', touchUnlock, { once: true, passive: true });
     this.events.once('shutdown', () => {
       this.game.canvas.removeEventListener('touchstart', touchUnlock);
@@ -59,6 +60,7 @@ export default class MenuScene extends Phaser.Scene {
 
       label.on('pointerup', () => {
         if (!unlocked) return;
+        playCue(this, 'ui_confirm');
         this.scene.start('Lesson', { levelNum: i });
       });
     }
@@ -67,6 +69,7 @@ export default class MenuScene extends Phaser.Scene {
       .setInteractive({ useHandCursor: true });
 
     gear.on('pointerup', () => {
+      playCue(this, 'ui_click');
       if (!this.scene.isActive('Settings')) this.scene.launch('Settings');
     });
   }

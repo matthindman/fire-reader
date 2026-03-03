@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { loadProfile, saveProfile } from '../storage';
-import { ensureBgm, setBgmMute } from '../audio';
+import { playCue, setGlobalMute, unlockAudio } from '../audio';
 
 const BTN_STYLE = {
   fontSize: '22px',
@@ -27,22 +27,29 @@ export default class SettingsModal extends Phaser.Scene {
   private async initAsync() {
     const profile = await loadProfile();
 
-    const musicBtn = this.add.text(480, 200, `Music: ${profile.muted ? 'Off' : 'On'}`, BTN_STYLE)
+    const soundBtn = this.add.text(480, 200, `Sound: ${profile.muted ? 'Off' : 'On'}`, BTN_STYLE)
       .setOrigin(0.5).setInteractive({ useHandCursor: true });
 
-    musicBtn.on('pointerup', async () => {
-      profile.muted = !profile.muted;
-      this.sound.mute = profile.muted;
-      setBgmMute(profile.muted);
-      musicBtn.setText(`Music: ${profile.muted ? 'Off' : 'On'}`);
+    soundBtn.on('pointerup', async () => {
+      const nextMuted = !profile.muted;
+      if (nextMuted) {
+        playCue(this, 'ui_toggle_off');
+        setGlobalMute(this, true);
+      } else {
+        setGlobalMute(this, false);
+        unlockAudio(this);
+        playCue(this, 'ui_toggle_on');
+      }
+      profile.muted = nextMuted;
+      soundBtn.setText(`Sound: ${profile.muted ? 'Off' : 'On'}`);
       await saveProfile(profile);
-      if (!profile.muted) ensureBgm(this);
     });
 
     const contrastBtn = this.add.text(480, 250, `Contrast: ${profile.contrastHigh ? 'High' : 'Normal'}`, BTN_STYLE)
       .setOrigin(0.5).setInteractive({ useHandCursor: true });
 
     contrastBtn.on('pointerup', async () => {
+      playCue(this, 'ui_click');
       profile.contrastHigh = !profile.contrastHigh;
       document.body.classList.toggle('contrast-high', profile.contrastHigh);
       contrastBtn.setText(`Contrast: ${profile.contrastHigh ? 'High' : 'Normal'}`);
@@ -53,6 +60,7 @@ export default class SettingsModal extends Phaser.Scene {
       .setOrigin(0.5).setInteractive({ useHandCursor: true });
 
     progressBtn.on('pointerup', () => {
+      playCue(this, 'ui_click');
       if (!this.scene.isActive('ParentDashboard')) this.scene.launch('ParentDashboard');
     });
 
@@ -60,6 +68,7 @@ export default class SettingsModal extends Phaser.Scene {
       .setOrigin(0.5).setInteractive({ useHandCursor: true });
 
     resetBtn.on('pointerup', () => {
+      playCue(this, 'ui_click');
       const overlay = this.add.rectangle(480, 270, 960, 540, 0x000000, 0.7).setOrigin(0.5);
       overlay.setInteractive();
 
@@ -85,6 +94,7 @@ export default class SettingsModal extends Phaser.Scene {
       };
 
       yesBtn.on('pointerup', async () => {
+        playCue(this, 'ui_confirm');
         cleanup();
         profile.unlockedLevel = 1;
         profile.words = {};
@@ -93,19 +103,28 @@ export default class SettingsModal extends Phaser.Scene {
         this.scene.get('Menu').scene.restart();
       });
 
-      noBtn.on('pointerup', cleanup);
+      noBtn.on('pointerup', () => {
+        playCue(this, 'ui_back');
+        cleanup();
+      });
     });
 
     const closeBtn = this.add.text(480, 405, 'Close (Esc)', BTN_STYLE)
       .setOrigin(0.5).setInteractive({ useHandCursor: true });
 
-    closeBtn.on('pointerup', () => this.scene.stop());
+    closeBtn.on('pointerup', () => {
+      playCue(this, 'ui_back');
+      this.scene.stop();
+    });
 
-    this.escHandler = () => this.scene.stop();
-    this.input.keyboard?.on('keydown-ESC', this.escHandler);
+    this.escHandler = () => {
+      playCue(this, 'ui_back');
+      this.scene.stop();
+    };
+    if (this.input.keyboard) this.input.keyboard.on('keydown-ESC', this.escHandler);
 
     this.events.once('shutdown', () => {
-      if (this.escHandler) this.input.keyboard?.off('keydown-ESC', this.escHandler);
+      if (this.escHandler && this.input.keyboard) this.input.keyboard.off('keydown-ESC', this.escHandler);
     });
   }
 }

@@ -20,9 +20,9 @@ export default class ParentDashboard extends Phaser.Scene {
 
     const rows = Object.entries(words).map(([word, st]) => ({
       word,
-      interval: (st.interval ?? 0).toFixed(1),
-      ease: (st.ease ?? 1.3).toFixed(2),
-      successes: st.successes ?? 0
+      interval: (st.interval ? st.interval : 0).toFixed(1),
+      ease: (st.ease ? st.ease : 1.3).toFixed(2),
+      successes: st.successes ? st.successes : 0
     })).sort((a, b) => b.successes - a.successes);
 
     const csv = ['word,interval_hours,ease,successes']
@@ -62,15 +62,15 @@ export default class ParentDashboard extends Phaser.Scene {
     this.domElement.on('click', (e: any) => {
       const t = e.target as HTMLElement;
       if (t.id === 'close') this.scene.stop();
-      if (t.id === 'copy') navigator.clipboard?.writeText(csv);
+      if (t.id === 'copy' && navigator.clipboard) navigator.clipboard.writeText(csv);
     });
 
     this.escHandler = () => this.scene.stop();
-    this.input.keyboard?.on('keydown-ESC', this.escHandler);
+    if (this.input.keyboard) this.input.keyboard.on('keydown-ESC', this.escHandler);
 
     this.events.once('shutdown', () => {
-      if (this.escHandler) this.input.keyboard?.off('keydown-ESC', this.escHandler);
-      this.domElement?.destroy();
+      if (this.escHandler && this.input.keyboard) this.input.keyboard.off('keydown-ESC', this.escHandler);
+      if (this.domElement) this.domElement.destroy();
       this.domElement = undefined;
     });
   }

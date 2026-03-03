@@ -44,3 +44,6 @@ This document fills in implementation details that are implied by the TDD but no
 ## Audio behavior
 - Background music is looped at 0.4 volume and only starts after a user gesture.
 - Mute toggles both the Phaser sound manager and the current BGM instance. Unmuting resumes or restarts playback.
+- For full music/SFX direction (retro side-scroller style, mix targets, and cue catalog), see `SOUND_DESIGN_SPEC.md`.
+- Runtime now uses named loops (`bgm_menu_loop`, `bgm_game_loop_a/b/c`) plus cue-based SFX (`ui_*`, `spray_shot`, `hit_*`, `fail_try_again`, `level_clear_fanfare`).
+- Audio assets are generated locally with `npm run audio:generate`, which writes WAV files under `assets/audio/music/` and `assets/audio/sfx/`.

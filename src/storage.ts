@@ -27,7 +27,7 @@ export async function loadProfile(): Promise<SaveData> {
     storageChecked = true;
     storageAvailable = true;
 
-    const merged = val ? { ...DEFAULT, ...val, words: val.words ?? {} } : { ...DEFAULT };
+    const merged = val ? { ...DEFAULT, ...val, words: val.words ? val.words : {} } : { ...DEFAULT };
 
     for (const k of Object.keys(merged.words)) {
       const w = merged.words[k];

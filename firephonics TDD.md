@@ -24,6 +24,7 @@ assets/audio/
   hit.wav
   fail.wav
   victory.wav
+For full music/SFX design details (retro side-scroller style, mute toggle behavior, mix targets, and implementation plan), see `SOUND_DESIGN_SPEC.md`.
 ### 7.4 TexturePacker / atlas requirements (CRITICAL) The code supports atlas frames **with** or **without** .png extensions, but your atlas must include these base names: **Minimum required frames** - kid_idle_0 … kid_idle_3 - water - boss_kitchen_0 … boss_kitchen_5 - all other boss sets used by levels (0–5 frames each) - dragon_0 … dragon_11 **Recommended TexturePacker settings** - Data format: **Phaser 3 JSON Array** - Frame names: keep file base names (extension optional) - Allow rotation: off (simplifies) - Trim: optional BootScene validates required frames and shows an error if missing. --- ## 8. Build & Run Instructions (macOS) ### 8.1 Development
 bash
 npm install

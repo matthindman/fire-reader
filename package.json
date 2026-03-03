@@ -12,7 +12,8 @@
     "build:debug": "parcel build index.html --public-url ./ --no-optimize",
     "build:zip": "npm run build && (cd dist && zip -r ../fire-reader-dist.zip .)",
     "typecheck": "tsc --noEmit",
-    "atlas": "texturepacker --data assets/atlas.json --sheet assets/atlas.png --format phaser-json-array assets/raw/*.png"
+    "audio:generate": "python3 scripts/generate_audio_assets.py",
+    "atlas": "sh -c 'if command -v texturepacker >/dev/null 2>&1; then texturepacker --data assets/atlas.json --sheet assets/atlas.png --format phaser-json-array assets/raw/*.png; else python3 scripts/build_atlas.py; fi'"
   },
   "dependencies": {
     "idb-keyval": "^6.2.1",
@@ -20,6 +21,20 @@
   },
   "devDependencies": {
     "parcel": "^2.11.0",
+    "process": "^0.11.10",
     "typescript": "^5.4.0"
+  },
+  "browserslist": [
+    "defaults",
+    "Safari >= 12",
+    "iOS >= 12"
+  ],
+  "targets": {
+    "default": {
+      "context": "browser",
+      "engines": {
+        "safari": ">= 12"
+      }
+    }
   }
 }
