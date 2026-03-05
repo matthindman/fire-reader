@@ -2,9 +2,8 @@ import Phaser from 'phaser';
 import { loadProfile, isStorageAvailable } from '../storage';
 import { playCue, requestMenuMusic, unlockAudio } from '../audio';
 import { LEVELS } from '../data/levels';
-import { LEVEL_VISUALS, getLevelBg, getLevelBoss } from '../visuals';
+import { getLevelBg, getLevelBoss } from '../visuals';
 import { atlasFrame, hasAtlasFrame } from '../atlasUtil';
-import { getBossIdlePair } from '../anims';
 import { GAME_CONSTANTS } from '../constants';
 
 // Grid layout constants
@@ -202,22 +201,31 @@ export default class MenuScene extends Phaser.Scene {
     }
 
     // 3. Boss sprite (only if has atlas frames)
-    const bossAnimKey = getLevelBoss(i);
-    const isDragon = bossAnimKey === 'dragon';
-    const [startIdx] = getBossIdlePair(bossAnimKey);
-    const bossFrame = isDragon ? `${bossAnimKey}_0` : `${bossAnimKey}_${startIdx}`;
-    if (hasAtlasFrame(bossFrame)) {
-      const bossSprite = this.add.sprite(0, -8, 'atlas', atlasFrame(bossFrame));
-      bossSprite.setScale(0.4);
-      if (this.anims.exists(bossAnimKey)) bossSprite.play(bossAnimKey);
+    const bossKey = getLevelBoss(i);
+    const isDragon = bossKey === 'dragon';
+    const bossIdleAtlasFrame = isDragon ? 'dragon_0' : `${bossKey}_1`;
+    const hasBossAtlasFrame = hasAtlasFrame(bossIdleAtlasFrame);
+    const hasBossSheet = this.textures.exists(bossKey);
+
+    let bossSprite: Phaser.GameObjects.Sprite | undefined;
+    if (isDragon && hasBossAtlasFrame) {
+      bossSprite = this.add.sprite(0, -8, 'atlas', atlasFrame(bossIdleAtlasFrame));
+      bossSprite.setScale(0.38);
+    } else if (!isDragon && hasBossSheet) {
+      bossSprite = this.add.sprite(0, -8, bossKey, 1);
+      bossSprite.setOrigin(0.5, 1.0);
+      bossSprite.setScale(0.24);
+    }
+
+    if (bossSprite) {
       container.add(bossSprite);
 
       // Boss pulse animation on unlocked cards
       if (unlocked) {
         const bossTween = this.tweens.add({
           targets: bossSprite,
-          scaleX: 0.43,
-          scaleY: 0.43,
+          scaleX: bossSprite.scaleX * 1.08,
+          scaleY: bossSprite.scaleY * 1.08,
           duration: 2000,
           yoyo: true,
           repeat: -1,

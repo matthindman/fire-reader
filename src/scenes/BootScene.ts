@@ -36,6 +36,34 @@ const BG_URLS: Record<string, string> = {
   bg_stadium:           new URL('../../assets/backgrounds/bg_stadium.png', import.meta.url).toString(),
 };
 
+const BOSS_SHEET_URLS: Record<string, string> = {
+  boss_apartment_building: new URL('../../assets/boss_apartment_building_sheet.png', import.meta.url).toString(),
+  boss_bakery:             new URL('../../assets/boss_bakery_sheet.png', import.meta.url).toString(),
+  boss_bbq:                new URL('../../assets/boss_bbq_sheet.png', import.meta.url).toString(),
+  boss_beach:              new URL('../../assets/boss_beach_sheet.png', import.meta.url).toString(),
+  boss_campfire:           new URL('../../assets/boss_campfire_sheet.png', import.meta.url).toString(),
+  boss_car:                new URL('../../assets/boss_car_sheet.png', import.meta.url).toString(),
+  boss_construction_site:  new URL('../../assets/boss_construction_site_sheet.png', import.meta.url).toString(),
+  boss_corn_maze:          new URL('../../assets/boss_corn_maze_sheet.png', import.meta.url).toString(),
+  boss_ferry:              new URL('../../assets/boss_ferry_sheet.png', import.meta.url).toString(),
+  boss_fire_station:       new URL('../../assets/boss_fire_station_sheet.png', import.meta.url).toString(),
+  boss_forest:             new URL('../../assets/boss_forest_sheet.png', import.meta.url).toString(),
+  boss_freight_train:      new URL('../../assets/boss_freight_train_sheet.png', import.meta.url).toString(),
+  boss_grocery_store:      new URL('../../assets/boss_grocery_store_sheet.png', import.meta.url).toString(),
+  boss_hospital:           new URL('../../assets/boss_hospital_sheet.png', import.meta.url).toString(),
+  boss_ice_cream_truck:    new URL('../../assets/boss_ice_cream_truck_sheet.png', import.meta.url).toString(),
+  boss_kitchen:            new URL('../../assets/boss_kitchen_sheet.png', import.meta.url).toString(),
+  boss_lighthouse:         new URL('../../assets/boss_lighthouse_sheet.png', import.meta.url).toString(),
+  boss_movie_theater:      new URL('../../assets/boss_movie_theater_sheet.png', import.meta.url).toString(),
+  boss_office:             new URL('../../assets/boss_office_sheet.png', import.meta.url).toString(),
+  boss_pet_store:          new URL('../../assets/boss_pet_store_sheet.png', import.meta.url).toString(),
+  boss_pizzeria:           new URL('../../assets/boss_pizzeria_sheet.png', import.meta.url).toString(),
+  boss_school_bus:         new URL('../../assets/boss_school_bus_sheet.png', import.meta.url).toString(),
+  boss_train_station:      new URL('../../assets/boss_train_station_sheet.png', import.meta.url).toString(),
+  boss_trash:              new URL('../../assets/boss_trash_sheet.png', import.meta.url).toString(),
+  boss_warehouse:          new URL('../../assets/boss_warehouse_sheet.png', import.meta.url).toString(),
+};
+
 export default class BootScene extends Phaser.Scene {
   constructor() { super('Boot'); }
 
@@ -88,6 +116,11 @@ export default class BootScene extends Phaser.Scene {
     // Load all available backgrounds
     for (const [key, url] of Object.entries(BG_URLS)) {
       this.load.image(key, url);
+    }
+
+    // Boss sheets: 3x2, each frame is 512x512
+    for (const [key, url] of Object.entries(BOSS_SHEET_URLS)) {
+      this.load.spritesheet(key, url, { frameWidth: 512, frameHeight: 512 });
     }
 
     this.load.audio('bgm', new URL('../../assets/audio/bgm.wav', import.meta.url).toString());

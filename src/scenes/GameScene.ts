@@ -5,7 +5,6 @@ import { Scheduler, type Rating, applyRating } from '../spacedRepetition';
 import { loadProfile, debouncedSaveProfile, flushSaveProfile, saveProfile } from '../storage';
 import { LEVEL_VISUALS, getLevelBg, getLevelBoss } from '../visuals';
 import { atlasFrame, hasAtlasFrame } from '../atlasUtil';
-import { getBossIdlePair } from '../anims';
 import SentenceCard from '../ui/SentenceCard';
 import { GAME_CONSTANTS } from '../constants';
 import { duckMusic, playCue, requestGameMusic, unlockAudio } from '../audio';
@@ -99,6 +98,13 @@ export default class GameScene extends Phaser.Scene {
   private streak = 0;
   private maxStreak = 0;
   private streakText!: Phaser.GameObjects.Text;
+  private bossTextureKey = 'boss_kitchen';
+  private bossUsesAtlasFrames = false;
+  private bossIdleFrameIndex = 1;
+  private bossHitFrameIndex = 5;
+  private bossIdleAtlasFrame = 'boss_kitchen_1';
+  private bossHitAtlasFrame = 'boss_kitchen_5';
+  private bossHitResetTimer?: Phaser.Time.TimerEvent;
 
   create() {
     this.add.text(480, 270, 'Loading...', { fontSize: '24px', color: '#AAAAAA' }).setOrigin(0.5);
@@ -123,6 +129,10 @@ export default class GameScene extends Phaser.Scene {
     this.gameplayUI = [];
     this.victoryBounceTween = undefined;
     this.maxStreak = 0;
+    if (this.bossHitResetTimer) {
+      this.bossHitResetTimer.remove(false);
+      this.bossHitResetTimer = undefined;
+    }
 
     this.profile = await loadProfile();
     const levelRaw = this.registry.get('nextLevel') as number | undefined;
@@ -164,37 +174,43 @@ export default class GameScene extends Phaser.Scene {
     const vis = LEVEL_VISUALS[this.levelNum];
     const kidX = vis?.kidX ?? 180;
     const kidY = vis?.kidY ?? 380;
+    const bossKey = getLevelBoss(this.levelNum);
+    const defaultBossScale = bossKey === 'dragon' ? 0.72 : 0.56;
     const bossX = vis?.bossX ?? 780;
     const bossY = vis?.bossY ?? 310;
-    const bossScale = vis?.bossScale ?? 1.0;
+    const bossScale = vis?.bossScale ?? defaultBossScale;
     this.bossRestX = bossX;
     this.kidRestY = kidY;
 
     this.kid = this.add.sprite(kidX, kidY, 'atlas', atlasFrame('kid_idle_0')).play('kid_idle');
     this.kid.setScale(1.0);
 
-    const bossAnim = getLevelBoss(this.levelNum);
-    if (bossAnim === 'dragon') {
-      this.boss = this.add.sprite(bossX, bossY, 'atlas', atlasFrame(`${bossAnim}_0`)).play(bossAnim);
-      this.boss.setScale(1.15);
+    if (bossKey === 'dragon') {
+      this.bossUsesAtlasFrames = true;
+      this.bossIdleAtlasFrame = hasAtlasFrame('dragon_0') ? 'dragon_0' : 'boss_kitchen_1';
+      this.bossHitAtlasFrame = hasAtlasFrame('dragon_11') ? 'dragon_11' : this.bossIdleAtlasFrame;
+      this.boss = this.add.sprite(bossX, bossY, 'atlas', atlasFrame(this.bossIdleAtlasFrame));
+      this.boss.setOrigin(0.5, 0.9);
     } else {
-      const [startIdx] = getBossIdlePair(bossAnim);
-      const preferredStart = `${bossAnim}_${startIdx}`;
-      const bossStartFrame = hasAtlasFrame(preferredStart) ? preferredStart : 'boss_kitchen_0';
-      this.boss = this.add.sprite(bossX, bossY, 'atlas', atlasFrame(bossStartFrame)).play(bossAnim);
-      this.boss.setOrigin(0.5, 0.85);
-      this.boss.setScale(bossScale);
-
-      this.bossPulseTween = this.tweens.add({
-        targets: this.boss,
-        scaleX: bossScale * 1.02,
-        scaleY: bossScale * 1.03,
-        duration: 1400,
-        yoyo: true,
-        repeat: -1,
-        ease: 'Sine.easeInOut'
-      });
+      this.bossUsesAtlasFrames = false;
+      this.bossTextureKey = this.textures.exists(bossKey) ? bossKey : 'boss_kitchen';
+      this.bossIdleFrameIndex = 1;
+      this.bossHitFrameIndex = 5;
+      this.boss = this.add.sprite(bossX, bossY, this.bossTextureKey, this.bossIdleFrameIndex);
+      this.boss.setOrigin(0.5, 1.0);
     }
+    this.boss.setScale(bossScale);
+    this.setBossIdleFrame();
+
+    this.bossPulseTween = this.tweens.add({
+      targets: this.boss,
+      scaleX: bossScale * 1.02,
+      scaleY: bossScale * 1.03,
+      duration: 1400,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut'
+    });
 
     this.splashEmitter = this.add.particles(0, 0, 'particle_dot', {
       speed: { min: 60, max: 180 },
@@ -280,6 +296,10 @@ export default class GameScene extends Phaser.Scene {
       if (this.wordTransitionTween) {
         this.wordTransitionTween.stop();
         this.wordTransitionTween = undefined;
+      }
+      if (this.bossHitResetTimer) {
+        this.bossHitResetTimer.remove(false);
+        this.bossHitResetTimer = undefined;
       }
       if (this.defeatEmitter) {
         this.defeatEmitter.destroy();
@@ -544,6 +564,7 @@ export default class GameScene extends Phaser.Scene {
         }
 
         if (isEasy) {
+          this.showBossHitFrame(130);
           // Full boss flash + screen shake + recoil for Easy
           this.boss.setTintFill(0xffffff);
           this.time.delayedCall(80, () => this.boss.clearTint());
@@ -554,6 +575,7 @@ export default class GameScene extends Phaser.Scene {
 
           this.bossRecoil();
         } else {
+          this.showBossHitFrame(100);
           // Lighter boss tint flash + smaller recoil for Hard (no screen shake)
           this.boss.setTintFill(0xdddddd);
           this.time.delayedCall(60, () => this.boss.clearTint());
@@ -561,6 +583,29 @@ export default class GameScene extends Phaser.Scene {
           this.bossRecoilSmall();
         }
       }
+    });
+  }
+
+  private setBossIdleFrame() {
+    if (!this.boss || !this.boss.active) return;
+    if (this.bossUsesAtlasFrames) {
+      this.boss.setFrame(atlasFrame(this.bossIdleAtlasFrame));
+    } else {
+      this.boss.setFrame(this.bossIdleFrameIndex);
+    }
+  }
+
+  private showBossHitFrame(durationMs: number) {
+    if (!this.boss || !this.boss.active) return;
+    if (this.bossUsesAtlasFrames) {
+      this.boss.setFrame(atlasFrame(this.bossHitAtlasFrame));
+    } else {
+      this.boss.setFrame(this.bossHitFrameIndex);
+    }
+    if (this.bossHitResetTimer) this.bossHitResetTimer.remove(false);
+    this.bossHitResetTimer = this.time.delayedCall(durationMs, () => {
+      this.setBossIdleFrame();
+      this.bossHitResetTimer = undefined;
     });
   }
 

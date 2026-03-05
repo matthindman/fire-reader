@@ -2,7 +2,6 @@ import Phaser from 'phaser';
 import { LEVELS } from '../data/levels';
 import { getLevelBg, getLevelBoss } from '../visuals';
 import { atlasFrame, hasAtlasFrame } from '../atlasUtil';
-import { getBossIdlePair } from '../anims';
 import { playCue, requestMenuMusic, unlockAudio } from '../audio';
 import type { LevelData } from '../types';
 
@@ -95,17 +94,26 @@ export default class LessonScene extends Phaser.Scene {
     });
 
     // --- Boss sprite ---
-    const bossAnimKey = getLevelBoss(levelNum);
-    const isDragon = bossAnimKey === 'dragon';
-    const bossTargetScale = isDragon ? 0.65 : 0.75;
-    const [startIdx] = getBossIdlePair(bossAnimKey);
-    const bossFrame = isDragon ? `${bossAnimKey}_0` : `${bossAnimKey}_${startIdx}`;
-    const hasBossFrame = hasAtlasFrame(bossFrame);
-    const boss = this.add.sprite(960, 220, 'atlas', atlasFrame(hasBossFrame ? bossFrame : 'boss_kitchen_0'));
-    boss.setOrigin(0.5).setScale(0);
+    const bossKey = getLevelBoss(levelNum);
+    const isDragon = bossKey === 'dragon';
+    const bossTargetScale = isDragon ? 0.65 : 0.62;
+    const bossIdleAtlasFrame = isDragon ? 'dragon_0' : `${bossKey}_1`;
+    const hasBossAtlasFrame = hasAtlasFrame(bossIdleAtlasFrame);
+    const hasBossSheet = this.textures.exists(bossKey);
+
+    let boss: Phaser.GameObjects.Sprite;
+    if (isDragon && hasBossAtlasFrame) {
+      boss = this.add.sprite(960, 220, 'atlas', atlasFrame(bossIdleAtlasFrame));
+      boss.setOrigin(0.5, 0.95).setScale(0);
+    } else if (!isDragon && hasBossSheet) {
+      boss = this.add.sprite(960, 220, bossKey, 1);
+      boss.setOrigin(0.5, 1.0).setScale(0);
+    } else {
+      boss = this.add.sprite(960, 220, 'atlas', atlasFrame('boss_kitchen_1'));
+      boss.setOrigin(0.5, 0.95).setScale(0);
+    }
 
     this.time.delayedCall(400, () => {
-      if (hasBossFrame) boss.play(bossAnimKey);
       this.tweens.add({
         targets: boss,
         x: 760,
@@ -116,8 +124,8 @@ export default class LessonScene extends Phaser.Scene {
         onComplete: () => {
           this.bossPulseTween = this.tweens.add({
             targets: boss,
-            scaleX: bossTargetScale + 0.03,
-            scaleY: bossTargetScale + 0.03,
+            scaleX: bossTargetScale * 1.05,
+            scaleY: bossTargetScale * 1.05,
             duration: 1800,
             yoyo: true,
             repeat: -1,
