@@ -9,40 +9,6 @@ function upsertAnimation(
   anims.create(config);
 }
 
-// Generated from raw frame centroid drift analysis.
-// These pairs keep idle motion while avoiding large sprite-position jumps.
-const BOSS_IDLE_PAIR_BY_KEY: Readonly<Record<string, readonly [number, number]>> = {
-  boss_apartment_building: [4, 5],
-  boss_bakery: [4, 5],
-  boss_bbq: [1, 2],
-  boss_beach: [1, 2],
-  boss_campfire: [1, 2],
-  boss_car: [1, 2],
-  boss_construction_site: [4, 5],
-  boss_corn_maze: [4, 5],
-  boss_ferry: [0, 1],
-  boss_fire_station: [4, 5],
-  boss_forest: [1, 2],
-  boss_freight_train: [4, 5],
-  boss_grocery_store: [4, 5],
-  boss_hospital: [1, 2],
-  boss_ice_cream_truck: [4, 5],
-  boss_kitchen: [4, 5],
-  boss_lighthouse: [4, 5],
-  boss_movie_theater: [4, 5],
-  boss_office: [4, 5],
-  boss_pet_store: [0, 1],
-  boss_pizzeria: [4, 5],
-  boss_school_bus: [1, 2],
-  boss_train_station: [4, 5],
-  boss_trash: [4, 5],
-  boss_warehouse: [4, 5],
-};
-
-function getBossIdlePair(bossKey: string): readonly [number, number] {
-  return BOSS_IDLE_PAIR_BY_KEY[bossKey] ?? [4, 5];
-}
-
 function pickFrame(names: Set<string>, base: string): string | null {
   if (names.has(`${base}.png`)) return `${base}.png`;
   if (names.has(base)) return base;
@@ -108,13 +74,11 @@ export function ensureAnimations(
         console.warn(`[anims] Skipping ${k}: atlas frames not found`);
         continue;
       }
-      const [a, b] = getBossIdlePair(k);
       upsertAnimation(anims, {
         key: k,
-        frames: buildFramesByIndices(names, `${k}_`, [a, b]),
-        frameRate: 2,
-        repeat: -1,
-        yoyo: true
+        frames: buildFrames(names, `${k}_`, 0, 5),
+        frameRate: 4,
+        repeat: -1
       });
     }
   }
