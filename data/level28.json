@@ -1,0 +1,25 @@
+{
+  "id": 28,
+  "title": "Toy Store Fire",
+  "phonics": "Super Sight Words I",
+  "lesson": "These words are tricky \u2014 they don't follow the usual rules! You have to recognize them by sight. 'Three', 'four', 'five' \u2014 you already know some of these. Let's practice them all!",
+  "hp": 15,
+  "new": [
+    "three",
+    "four",
+    "five",
+    "here",
+    "there",
+    "come",
+    "some",
+    "done",
+    "gone",
+    "give",
+    "have",
+    "does",
+    "says",
+    "your",
+    "who"
+  ],
+  "trick": []
+}

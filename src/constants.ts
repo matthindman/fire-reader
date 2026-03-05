@@ -8,5 +8,7 @@ export const GAME_CONSTANTS = {
   REINSERT_DELAY_EASY_CONFIRM: 10,
 
   // Easy streak needed for "stable" mastery
-  MASTERY_THRESHOLD: 1
+  MASTERY_THRESHOLD: 1,
+
+  TOTAL_LEVELS: 38
 } as const;

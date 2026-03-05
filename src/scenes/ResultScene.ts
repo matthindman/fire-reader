@@ -1,18 +1,9 @@
 import Phaser from 'phaser';
 import { playCue, requestMenuMusic, unlockAudio } from '../audio';
 
-const GEAR_TEXT: Record<number, string> = {
-  1: 'Unlocked: Kid helmet sticker',
-  2: 'Unlocked: Stronger hose nozzle',
-  3: 'Unlocked: Boots upgrade',
-  4: 'Unlocked: Water tank upgrade',
-  5: 'Unlocked: Fire truck badge',
-  6: 'Unlocked: Super soaker mode',
-  7: 'Unlocked: Heat shield',
-  8: 'Unlocked: Rescue rope',
-  9: 'Unlocked: Chief hat',
-  10: 'Unlocked: Dragon medal'
-};
+// This scene is mostly superseded by the inline win sequence in GameScene.
+// Keep a minimal gear text for backward compat.
+const GEAR_TEXT: Record<number, string> = {};
 
 export default class ResultScene extends Phaser.Scene {
   constructor() { super('Result'); }
@@ -44,6 +35,12 @@ export default class ResultScene extends Phaser.Scene {
     back.on('pointerup', () => {
       playCue(this, 'ui_back');
       this.scene.start('Menu');
+    });
+
+    this.scene.launch('VolumeOverlay');
+
+    this.events.once('shutdown', () => {
+      this.scene.stop('VolumeOverlay');
     });
   }
 }

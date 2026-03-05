@@ -61,6 +61,27 @@ let unlocked = false;
 let activeSfx: Phaser.Sound.BaseSound[] = [];
 let duckResetEvent: Phaser.Time.TimerEvent | null = null;
 
+let userMusicVolume = 1.0;
+let userSfxVolume = 1.0;
+
+export function setUserVolumes(music: number, sfx: number): void {
+  userMusicVolume = Math.max(0, Math.min(1, music));
+  userSfxVolume = Math.max(0, Math.min(1, sfx));
+}
+
+export function getUserMusicVolume(): number { return userMusicVolume; }
+export function getUserSfxVolume(): number { return userSfxVolume; }
+
+export function applyMusicVolume(scene: Phaser.Scene): void {
+  if (!music || !music.isPlaying || muted) return;
+  scene.tweens.add({
+    targets: music as any,
+    volume: BUS_GAIN.music * userMusicVolume,
+    duration: 120,
+    ease: 'Quad.easeOut'
+  });
+}
+
 function dbToGain(db: number): number {
   return Math.pow(10, db / 20);
 }
@@ -116,7 +137,7 @@ function ensureMusic(scene: Phaser.Scene): void {
 
   scene.tweens.add({
     targets: next as any,
-    volume: BUS_GAIN.music,
+    volume: BUS_GAIN.music * userMusicVolume,
     duration: MUSIC_CROSSFADE_MS,
     ease: 'Quad.easeOut'
   });
@@ -146,8 +167,8 @@ export function requestMenuMusic(scene: Phaser.Scene): void {
 }
 
 export function requestGameMusic(scene: Phaser.Scene, levelNum: number): void {
-  if (levelNum <= 3) desiredTrack = 'game_a';
-  else if (levelNum <= 7) desiredTrack = 'game_b';
+  if (levelNum <= 12) desiredTrack = 'game_a';
+  else if (levelNum <= 24) desiredTrack = 'game_b';
   else desiredTrack = 'game_c';
   ensureMusic(scene);
 }
@@ -191,7 +212,7 @@ export function playCue(scene: Phaser.Scene, cue: CueName): void {
   }
 
   const sound = scene.sound.add(key, {
-    volume: BUS_GAIN[config.bus] * config.gain
+    volume: BUS_GAIN[config.bus] * config.gain * userSfxVolume
   });
 
   sound.once('complete', () => removeSfxVoice(sound));
@@ -208,7 +229,7 @@ export function playCue(scene: Phaser.Scene, cue: CueName): void {
 export function duckMusic(scene: Phaser.Scene, amountDb = 3, holdMs = 320): void {
   if (!music || muted || !music.isPlaying) return;
 
-  const low = BUS_GAIN.music * dbToGain(-Math.abs(amountDb));
+  const low = BUS_GAIN.music * userMusicVolume * dbToGain(-Math.abs(amountDb));
   scene.tweens.killTweensOf(music as any);
   scene.tweens.add({
     targets: music as any,
@@ -222,7 +243,7 @@ export function duckMusic(scene: Phaser.Scene, amountDb = 3, holdMs = 320): void
     if (!music || muted) return;
     scene.tweens.add({
       targets: music as any,
-      volume: BUS_GAIN.music,
+      volume: BUS_GAIN.music * userMusicVolume,
       duration: 180,
       ease: 'Quad.easeInOut'
     });

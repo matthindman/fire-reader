@@ -1,0 +1,25 @@
+{
+  "id": 25,
+  "title": "Office Fire",
+  "phonics": "R-controlled vowels ar and or",
+  "lesson": "Sometimes 'r' changes a vowel's sound. 'Car' has ar \u2014 the 'a' doesn't say its short sound anymore! 'Corn' has or \u2014 the 'o' changes too. Listen for those r-controlled sounds!",
+  "hp": 15,
+  "new": [
+    "car",
+    "far",
+    "bar",
+    "star",
+    "park",
+    "dark",
+    "hard",
+    "farm",
+    "for",
+    "or",
+    "corn",
+    "fork",
+    "horn",
+    "storm",
+    "short"
+  ],
+  "trick": []
+}

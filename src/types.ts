@@ -10,6 +10,11 @@ export interface SaveData {
   words: Record<string, WordState>;
   muted: boolean;
   contrastHigh: boolean;
+  musicVolume: number;
+  sfxVolume: number;
+  clearedLevels: number[];
+  levelStars: Record<number, number>;
+  bestStreak: Record<number, number>;
 }
 
 export interface LevelData {

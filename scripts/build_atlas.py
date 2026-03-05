@@ -36,24 +36,20 @@ class Sprite:
 
 
 def required_frame_names() -> set[str]:
+    """Minimum frames the atlas must contain.
+
+    Boss frames are discovered dynamically from assets/raw/ rather than
+    hardcoded, so new bosses are picked up automatically.
+    """
     names = {f"kid_idle_{i}" for i in range(4)}
     names.add("water")
-
-    bosses = [
-        "boss_kitchen",
-        "boss_trash",
-        "boss_campfire",
-        "boss_stove",
-        "boss_car",
-        "boss_bbq",
-        "boss_forest",
-        "boss_warehouse",
-        "boss_office",
-    ]
-    for boss in bosses:
-        names.update(f"{boss}_{i}" for i in range(6))
-
     names.update(f"dragon_{i}" for i in range(12))
+
+    # Auto-discover boss frame sets: any boss_*_0.png in raw/ implies _0 through _5
+    for p in sorted(RAW_DIR.glob("boss_*_0.png")):
+        prefix = p.stem.rsplit("_", 1)[0]  # e.g. "boss_kitchen"
+        names.update(f"{prefix}_{i}" for i in range(6))
+
     return names
 
 

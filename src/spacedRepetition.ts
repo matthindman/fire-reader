@@ -82,7 +82,7 @@ export class Scheduler {
 
     let delay: number | null = null;
     if (rating === 'fail') delay = GAME_CONSTANTS.REINSERT_DELAY_FAIL;
-    else if (rating === 'hard' && isTargetWord) delay = GAME_CONSTANTS.REINSERT_DELAY_HARD;
+    else if (rating === 'hard') delay = GAME_CONSTANTS.REINSERT_DELAY_HARD;
     else if (needsConfirm) delay = GAME_CONSTANTS.REINSERT_DELAY_EASY_CONFIRM;
 
     if (delay !== null) this.insertAt(Math.min(delay, this.queue.length), word);

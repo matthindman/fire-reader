@@ -1,0 +1,25 @@
+{
+  "id": 19,
+  "title": "Forest Fire",
+  "phonics": "Digraphs sh and wh",
+  "lesson": "A digraph is two letters that make one new sound. 'sh' says /sh/ \u2014 one sound, not two! 'Ship', 'shop', 'shut' all start with /sh/. 'What', 'when', 'which' start with /wh/. These letter teams work together!",
+  "hp": 15,
+  "new": [
+    "ship",
+    "shop",
+    "shut",
+    "dish",
+    "fish",
+    "wish",
+    "dash",
+    "cash",
+    "rash",
+    "push",
+    "rush",
+    "what",
+    "when",
+    "which",
+    "whip"
+  ],
+  "trick": []
+}

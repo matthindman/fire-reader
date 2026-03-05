@@ -1,14 +1,26 @@
 {
   "id": 2,
-  "title": "Trash-Can Fire",
-  "phonics": "Short /i/ in CVC words",
-  "lesson": "Now we listen for short 'i' - i-i-i like in 'igloo'. The pattern is letter + i + letter. Read 'sit'. Change the first letter and you can read 'hit', 'fit', and 'kit'. Let's put out this fire with i-words!",
-  "hp": 50,
+  "title": "Ice Cream Truck Fire",
+  "phonics": "Short /a/ \u2014 word families -ap, -ag, and -am",
+  "lesson": "More short 'a' words! These end in -ap, -ag, and -am. 'Cap', 'map', 'tap' \u2014 hear the 'a' in the middle? Same fire, new words. Keep spraying!",
+  "hp": 12,
   "new": [
-    "sit","hit","fit","kit","bit","lit","pit","sip","tip","zip",
-    "pig","dig","wig","big","fig","rig","fin","pin","win","tin",
-    "bin","lip","rip","dip","hip","him","his","kid","lid","rid",
-    "did","mix","fix","six","bib","rib","jib","dim","rim","gig"
+    "cap",
+    "map",
+    "tap",
+    "nap",
+    "lap",
+    "gap",
+    "bag",
+    "tag",
+    "wag",
+    "jam",
+    "ham",
+    "ram"
   ],
-  "trick": ["was","of","for","me","he","she","be","do","no","so"]
+  "trick": [
+    "and",
+    "to",
+    "you"
+  ]
 }

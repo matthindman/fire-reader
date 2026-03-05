@@ -1,14 +1,26 @@
 {
   "id": 1,
   "title": "Kitchen Fire",
-  "phonics": "Short /a/ in CVC words",
-  "lesson": "Today we will practice words with the short 'a' sound - a-a-a like in 'apple'. Many words use the same pattern: one letter, then 'a', then one letter. If you can read 'cat', you can read 'bat' and 'hat'. Let's spray water each time we read it right!",
-  "hp": 50,
+  "phonics": "Short /a/ \u2014 word families -at and -an",
+  "lesson": "We're learning the short 'a' sound \u2014 a-a-a like in 'apple'. These words end in -at and -an. If you can read 'cat', change the first letter to read 'bat' and 'hat'. Let's spray water on the kitchen fire!",
+  "hp": 12,
   "new": [
-    "cat","bat","mat","sat","hat","rat","pat","man","fan","pan",
-    "can","ran","tan","cap","map","tap","nap","lap","gap","bag",
-    "rag","tag","wag","jam","ham","dam","bad","dad","sad","mad",
-    "pad","had","gas","wax","max","van","cab","lad","pal","ram"
+    "cat",
+    "bat",
+    "mat",
+    "sat",
+    "hat",
+    "rat",
+    "pat",
+    "man",
+    "fan",
+    "pan",
+    "can",
+    "ran"
   ],
-  "trick": ["the","a","I","and","to","you","is","my","we","go"]
+  "trick": [
+    "the",
+    "a",
+    "I"
+  ]
 }

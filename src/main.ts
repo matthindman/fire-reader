@@ -6,6 +6,7 @@ import GameScene from './scenes/GameScene';
 import ResultScene from './scenes/ResultScene';
 import SettingsModal from './ui/SettingsModal';
 import ParentDashboard from './ui/ParentDashboard';
+import VolumeOverlay from './ui/VolumeOverlay';
 
 const jsWarning = document.getElementById('js-warning');
 if (jsWarning) jsWarning.remove();
@@ -60,7 +61,7 @@ const config: Phaser.Types.Core.GameConfig = {
   parent: 'game',
   dom: { createContainer: true },
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-  scene: [BootScene, MenuScene, LessonScene, GameScene, ResultScene, SettingsModal, ParentDashboard]
+  scene: [BootScene, MenuScene, LessonScene, GameScene, ResultScene, SettingsModal, ParentDashboard, VolumeOverlay]
 };
 
 try {

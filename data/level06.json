@@ -1,15 +1,25 @@
 {
   "id": 6,
-  "title": "Backyard BBQ",
-  "phonics": "Initial blends: st-, sp-, sl-, sn-, sw-",
-  "lesson": "Blends are two consonants that slide together at the start. You still hear both sounds: s-t in 'stop' and s-p in 'spin'. Let's practice starting blends and keep the BBQ safe!",
-  "hp": 50,
+  "title": "Beach Fire",
+  "phonics": "Short /i/ \u2014 word families -id, -ix, and -ib",
+  "lesson": "Last group of short 'i' words. 'Kid', 'lid', 'rid' end in -id. 'Mix', 'fix', 'six' end in -ix. Read them all and the beach fire is out!",
+  "hp": 10,
   "new": [
-    "stop","step","stem","stab","stack","stiff","still","staff","stand","stamp",
-    "stag","stun","stub","sting","spot","spit","spin","span","spat","spank",
-    "spill","spell","sped","spud","spun","spilt","slip","slap","slam","sled",
-    "slim","slug","slum","slop","slab","slot","snap","snip","snub","snug",
-    "snob","sniff","snuff","snag","swim","swam","swap","swan","swig","swat"
+    "kid",
+    "lid",
+    "rid",
+    "did",
+    "mix",
+    "fix",
+    "six",
+    "bib",
+    "rib",
+    "his"
   ],
-  "trick": []
+  "trick": [
+    "was",
+    "of",
+    "for",
+    "me"
+  ]
 }

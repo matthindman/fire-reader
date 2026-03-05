@@ -1,15 +1,25 @@
 {
   "id": 7,
-  "title": "Forest Floor Fire",
-  "phonics": "Digraphs: sh, ch, th, wh, ck",
-  "lesson": "A digraph is two letters that make one new sound. 'sh' is one sound, and 'ch' is one sound. We also use 'th', 'wh', and 'ck'. These letter teams work together!",
-  "hp": 50,
+  "title": "Campfire",
+  "phonics": "Short /o/ \u2014 word family -ot",
+  "lesson": "Short 'o' sounds like o-o-o in 'octopus'. All these words end in -ot. 'Hot', 'pot', 'dot' \u2014 hear the 'o'? Let's cool down the campfire!",
+  "hp": 10,
   "new": [
-    "ship","shop","shut","dish","fish","wish","dash","cash","rash","mash",
-    "push","rush","chip","chin","chat","chop","much","such","rich","chest",
-    "chick","munch","lunch","pinch","thin","this","that","with","bath","math",
-    "path","moth","both","then","them","what","when","which","wham","whip",
-    "duck","luck","back","sack","pack","tick","sock","rock","lick","kick"
+    "cot",
+    "dot",
+    "hot",
+    "pot",
+    "lot",
+    "not",
+    "rot",
+    "got",
+    "jot",
+    "tot"
   ],
-  "trick": []
+  "trick": [
+    "said",
+    "are",
+    "one",
+    "two"
+  ]
 }

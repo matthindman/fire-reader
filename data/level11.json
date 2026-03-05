@@ -1,0 +1,27 @@
+{
+  "id": 11,
+  "title": "Pizzeria Fire",
+  "phonics": "Short /u/ \u2014 word families -ut, -ub, and -ud",
+  "lesson": "'Cut', 'but', 'hut' end in -ut. 'Tub', 'rub', 'cub' end in -ub. Same short 'u' in each one!",
+  "hp": 14,
+  "new": [
+    "cut",
+    "but",
+    "hut",
+    "nut",
+    "rut",
+    "gut",
+    "tub",
+    "rub",
+    "sub",
+    "cub",
+    "hub",
+    "bud",
+    "mud",
+    "dud"
+  ],
+  "trick": [
+    "your",
+    "who"
+  ]
+}

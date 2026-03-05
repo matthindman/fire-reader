@@ -33,7 +33,6 @@ export default class SettingsModal extends Phaser.Scene {
     soundBtn.on('pointerup', async () => {
       const nextMuted = !profile.muted;
       if (nextMuted) {
-        playCue(this, 'ui_toggle_off');
         setGlobalMute(this, true);
       } else {
         setGlobalMute(this, false);

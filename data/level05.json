@@ -1,14 +1,29 @@
 {
   "id": 5,
-  "title": "Car Fire",
-  "phonics": "Short /e/ in CVC and CVCC words",
-  "lesson": "Short 'e' sounds like e-e-e in 'elephant'. We can read many words with the same pattern. 'Red', 'bed', and 'fed' change only the first letter. Read carefully and the fire will go out!",
-  "hp": 50,
+  "title": "Pet Shop Fire",
+  "phonics": "Short /i/ \u2014 word families -ig, -in, and -im",
+  "lesson": "More short 'i' words! 'Pig', 'dig', 'big' end in -ig. 'Fin', 'pin', 'win' end in -in. Spot the pattern and keep spraying!",
+  "hp": 15,
   "new": [
-    "set","get","let","met","net","pet","vet","wet","bet","yet",
-    "bed","fed","red","led","hen","pen","ten","den","men","leg",
-    "beg","peg","jet","gem","hem","web","wed","end","mess","less",
-    "nest","rest","test","bell","tell","sell","well","fell","kept","next"
+    "pig",
+    "dig",
+    "wig",
+    "big",
+    "fig",
+    "rig",
+    "fin",
+    "pin",
+    "win",
+    "tin",
+    "bin",
+    "him",
+    "dim",
+    "rim",
+    "gig"
   ],
-  "trick": ["they","this","that","with","when","where","why","from","again","friend"]
+  "trick": [
+    "some",
+    "done",
+    "gone"
+  ]
 }

@@ -3,8 +3,38 @@ import { loadProfile } from '../storage';
 import { validateLevels } from '../validate';
 import { ensureAnimations } from '../anims';
 import { initAtlasFrames, hasAtlasFrame, sampleAtlasFrames } from '../atlasUtil';
-import { setPersistedMuteState } from '../audio';
+import { setPersistedMuteState, setUserVolumes } from '../audio';
 import atlasData from '../../assets/atlas.json';
+
+// Static URL declarations for all backgrounds (Parcel requires static new URL() calls)
+const BG_URLS: Record<string, string> = {
+  bg_kitchen:           new URL('../../assets/backgrounds/bg1_kitchen.png', import.meta.url).toString(),
+  bg_trash:             new URL('../../assets/backgrounds/bg2_alley.png', import.meta.url).toString(),
+  bg_campfire:          new URL('../../assets/backgrounds/bg3_campsite.png', import.meta.url).toString(),
+  bg_car:               new URL('../../assets/backgrounds/bg5_parkinglot.png', import.meta.url).toString(),
+  bg_bbq:               new URL('../../assets/backgrounds/bg6_backyard_bbq.png', import.meta.url).toString(),
+  bg_forest:            new URL('../../assets/backgrounds/bg7_forest.png', import.meta.url).toString(),
+  bg_warehouse:         new URL('../../assets/backgrounds/bg8_warehouse.png', import.meta.url).toString(),
+  bg_office:            new URL('../../assets/backgrounds/bg9_office.png', import.meta.url).toString(),
+  bg_castle:            new URL('../../assets/backgrounds/bg10_castle.png', import.meta.url).toString(),
+  bg_ice_cream_truck:   new URL('../../assets/backgrounds/bg_ice_cream_truck.png', import.meta.url).toString(),
+  bg_bakery:            new URL('../../assets/backgrounds/bg_bakery.png', import.meta.url).toString(),
+  bg_pet_store:         new URL('../../assets/backgrounds/bg_pet_store.png', import.meta.url).toString(),
+  bg_beach:             new URL('../../assets/backgrounds/bg_beach.png', import.meta.url).toString(),
+  bg_grocery_store:     new URL('../../assets/backgrounds/bg_grocery_store.png', import.meta.url).toString(),
+  bg_corn_maze:         new URL('../../assets/backgrounds/bg_corn_maze.png', import.meta.url).toString(),
+  bg_fire_station:      new URL('../../assets/backgrounds/bg_fire_station.png', import.meta.url).toString(),
+  bg_pizzeria:          new URL('../../assets/backgrounds/bg_pizzeria.png', import.meta.url).toString(),
+  bg_school_bus:        new URL('../../assets/backgrounds/bg_school_bus.png', import.meta.url).toString(),
+  bg_movie_theater:     new URL('../../assets/backgrounds/bg_movie_theater.png', import.meta.url).toString(),
+  bg_apartment:         new URL('../../assets/backgrounds/bg_apartment_building.png', import.meta.url).toString(),
+  bg_construction_site: new URL('../../assets/backgrounds/bg_construction_site.png', import.meta.url).toString(),
+  bg_lighthouse:        new URL('../../assets/backgrounds/bg_lighthouse.png', import.meta.url).toString(),
+  bg_ferry:             new URL('../../assets/backgrounds/bg_ferry.png', import.meta.url).toString(),
+  bg_train_station:     new URL('../../assets/backgrounds/bg_train_station.png', import.meta.url).toString(),
+  bg_hospital:          new URL('../../assets/backgrounds/bg_hospital.png', import.meta.url).toString(),
+  bg_stadium:           new URL('../../assets/backgrounds/bg_stadium.png', import.meta.url).toString(),
+};
 
 export default class BootScene extends Phaser.Scene {
   constructor() { super('Boot'); }
@@ -55,16 +85,10 @@ export default class BootScene extends Phaser.Scene {
       atlasData as unknown as object
     );
 
-    this.load.image('bg1', new URL('../../assets/backgrounds/bg1_kitchen.png', import.meta.url).toString());
-    this.load.image('bg2', new URL('../../assets/backgrounds/bg2_alley.png', import.meta.url).toString());
-    this.load.image('bg3', new URL('../../assets/backgrounds/bg3_campsite.png', import.meta.url).toString());
-    this.load.image('bg4', new URL('../../assets/backgrounds/bg4_home_stove.png', import.meta.url).toString());
-    this.load.image('bg5', new URL('../../assets/backgrounds/bg5_parkinglot.png', import.meta.url).toString());
-    this.load.image('bg6', new URL('../../assets/backgrounds/bg6_backyard_bbq.png', import.meta.url).toString());
-    this.load.image('bg7', new URL('../../assets/backgrounds/bg7_forest.png', import.meta.url).toString());
-    this.load.image('bg8', new URL('../../assets/backgrounds/bg8_warehouse.png', import.meta.url).toString());
-    this.load.image('bg9', new URL('../../assets/backgrounds/bg9_office.png', import.meta.url).toString());
-    this.load.image('bg10', new URL('../../assets/backgrounds/bg10_castle.png', import.meta.url).toString());
+    // Load all available backgrounds
+    for (const [key, url] of Object.entries(BG_URLS)) {
+      this.load.image(key, url);
+    }
 
     this.load.audio('bgm', new URL('../../assets/audio/bgm.wav', import.meta.url).toString());
     this.load.audio('spray', new URL('../../assets/audio/spray.wav', import.meta.url).toString());
@@ -166,6 +190,7 @@ export default class BootScene extends Phaser.Scene {
     loadProfile().then(profile => {
       this.sound.mute = profile.muted;
       setPersistedMuteState(profile.muted);
+      setUserVolumes(profile.musicVolume, profile.sfxVolume);
       document.body.classList.toggle('contrast-high', profile.contrastHigh);
     }).finally(() => {
       this.scene.start('Menu');

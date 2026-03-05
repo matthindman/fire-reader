@@ -1,15 +1,29 @@
 {
   "id": 8,
-  "title": "Warehouse Blaze",
-  "phonics": "Final blends: -nd, -ng, -nt, -mp, -st",
-  "lesson": "Now we practice blends at the end of words. The last two letters slide together, like 'nd' in 'hand' and 'mp' in 'jump'. Listen for the ending sounds and read the whole word.",
-  "hp": 50,
+  "title": "Grocery Store Fire",
+  "phonics": "Short /o/ \u2014 word families -op, -og, and -ox",
+  "lesson": "'Hop', 'mop', 'pop' end in -op. 'Dog', 'log', 'fog' end in -og. Same short 'o' in the middle. Keep reading and spraying!",
+  "hp": 15,
   "new": [
-    "sand","hand","band","land","pond","end","bend","send","lend","tend",
-    "sing","ring","wing","king","song","long","bang","rang","hung","sting",
-    "tent","bent","went","hunt","punt","mint","tint","sent","rent","hint",
-    "lamp","camp","damp","ramp","jump","bump","dump","lump","limp","pump",
-    "last","fast","past","mast","best","rest","nest","test","cost","lost"
+    "hop",
+    "mop",
+    "pop",
+    "top",
+    "cop",
+    "sop",
+    "log",
+    "dog",
+    "fog",
+    "hog",
+    "jog",
+    "bog",
+    "box",
+    "fox",
+    "ox"
   ],
-  "trick": []
+  "trick": [
+    "three",
+    "four",
+    "five"
+  ]
 }

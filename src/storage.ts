@@ -8,7 +8,12 @@ const DEFAULT: SaveData = {
   unlockedLevel: STARTING_UNLOCKED_LEVEL,
   words: {},
   muted: false,
-  contrastHigh: false
+  contrastHigh: false,
+  musicVolume: 1.0,
+  sfxVolume: 1.0,
+  clearedLevels: [],
+  levelStars: {},
+  bestStreak: {}
 };
 
 let memStore: SaveData | null = null;
@@ -38,10 +43,18 @@ function saveLocalProfile(state: SaveData): boolean {
 
 function normalizeProfile(val: SaveData | null | undefined): SaveData {
   const merged = val ? { ...DEFAULT, ...val, words: val.words ? val.words : {} } : { ...DEFAULT };
+  if (!Array.isArray(merged.clearedLevels)) merged.clearedLevels = [];
+  if (!merged.levelStars || typeof merged.levelStars !== 'object') merged.levelStars = {};
+  if (!merged.bestStreak || typeof merged.bestStreak !== 'object') merged.bestStreak = {};
   merged.unlockedLevel = Math.max(
     STARTING_UNLOCKED_LEVEL,
     Number.isFinite(merged.unlockedLevel) ? merged.unlockedLevel : STARTING_UNLOCKED_LEVEL
   );
+
+  merged.musicVolume = Number.isFinite(merged.musicVolume)
+    ? Math.max(0, Math.min(1, merged.musicVolume)) : 1.0;
+  merged.sfxVolume = Number.isFinite(merged.sfxVolume)
+    ? Math.max(0, Math.min(1, merged.sfxVolume)) : 1.0;
 
   for (const k of Object.keys(merged.words)) {
     const w = merged.words[k];

@@ -1,0 +1,24 @@
+{
+  "id": 30,
+  "title": "Circus Fire",
+  "phonics": "Tier 1 sentences \u2014 3-4 words, CVC-heavy",
+  "lesson": "You know so many words now! Time to read sentences. Point to each word. Say it clearly. When you read a whole sentence, the fire gets weaker!",
+  "hp": 10,
+  "sentences": [
+    "A big bug ran.",
+    "I can run fast.",
+    "We can get wet.",
+    "The duck went in.",
+    "The barn is far.",
+    "The storm is big.",
+    "Look at the map.",
+    "The car can turn.",
+    "Dad had a hat.",
+    "The cat sat down.",
+    "A fat rat ran.",
+    "The dog can dig.",
+    "The sun is hot.",
+    "I can sit still.",
+    "We had fun."
+  ]
+}
