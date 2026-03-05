@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { LEVELS } from '../data/levels';
 import { getLevelBg, getLevelBoss } from '../visuals';
 import { atlasFrame, hasAtlasFrame } from '../atlasUtil';
+import { getBossIdlePair } from '../anims';
 import { playCue, requestMenuMusic, unlockAudio } from '../audio';
 import type { LevelData } from '../types';
 
@@ -97,9 +98,10 @@ export default class LessonScene extends Phaser.Scene {
     const bossAnimKey = getLevelBoss(levelNum);
     const isDragon = bossAnimKey === 'dragon';
     const bossTargetScale = isDragon ? 0.65 : 0.75;
-    const bossFrame = isDragon ? `${bossAnimKey}_0` : `${bossAnimKey}_1`;
+    const [startIdx] = getBossIdlePair(bossAnimKey);
+    const bossFrame = isDragon ? `${bossAnimKey}_0` : `${bossAnimKey}_${startIdx}`;
     const hasBossFrame = hasAtlasFrame(bossFrame);
-    const boss = this.add.sprite(960, 220, 'atlas', atlasFrame(hasBossFrame ? bossFrame : 'boss_kitchen_1'));
+    const boss = this.add.sprite(960, 220, 'atlas', atlasFrame(hasBossFrame ? bossFrame : 'boss_kitchen_0'));
     boss.setOrigin(0.5).setScale(0);
 
     this.time.delayedCall(400, () => {

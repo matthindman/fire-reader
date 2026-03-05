@@ -5,6 +5,7 @@ import { Scheduler, type Rating, applyRating } from '../spacedRepetition';
 import { loadProfile, debouncedSaveProfile, flushSaveProfile, saveProfile } from '../storage';
 import { LEVEL_VISUALS, getLevelBg, getLevelBoss } from '../visuals';
 import { atlasFrame, hasAtlasFrame } from '../atlasUtil';
+import { getBossIdlePair } from '../anims';
 import SentenceCard from '../ui/SentenceCard';
 import { GAME_CONSTANTS } from '../constants';
 import { duckMusic, playCue, requestGameMusic, unlockAudio } from '../audio';
@@ -177,7 +178,9 @@ export default class GameScene extends Phaser.Scene {
       this.boss = this.add.sprite(bossX, bossY, 'atlas', atlasFrame(`${bossAnim}_0`)).play(bossAnim);
       this.boss.setScale(1.15);
     } else {
-      const bossStartFrame = hasAtlasFrame(`${bossAnim}_0`) ? `${bossAnim}_0` : 'boss_kitchen_0';
+      const [startIdx] = getBossIdlePair(bossAnim);
+      const preferredStart = `${bossAnim}_${startIdx}`;
+      const bossStartFrame = hasAtlasFrame(preferredStart) ? preferredStart : 'boss_kitchen_0';
       this.boss = this.add.sprite(bossX, bossY, 'atlas', atlasFrame(bossStartFrame)).play(bossAnim);
       this.boss.setOrigin(0.5, 0.85);
       this.boss.setScale(bossScale);

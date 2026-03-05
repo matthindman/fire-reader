@@ -9,6 +9,38 @@ function upsertAnimation(
   anims.create(config);
 }
 
+export const BOSS_IDLE_PAIR_BY_KEY: Readonly<Record<string, readonly [number, number]>> = {
+  boss_apartment_building: [1, 2],
+  boss_bakery: [0, 3],
+  boss_bbq: [4, 5],
+  boss_beach: [2, 4],
+  boss_campfire: [2, 3],
+  boss_car: [0, 2],
+  boss_construction_site: [1, 4],
+  boss_corn_maze: [0, 3],
+  boss_ferry: [0, 1],
+  boss_fire_station: [0, 3],
+  boss_forest: [0, 2],
+  boss_freight_train: [0, 4],
+  boss_grocery_store: [1, 4],
+  boss_hospital: [1, 5],
+  boss_ice_cream_truck: [0, 3],
+  boss_kitchen: [2, 3],
+  boss_lighthouse: [1, 4],
+  boss_movie_theater: [2, 4],
+  boss_office: [0, 2],
+  boss_pet_store: [0, 1],
+  boss_pizzeria: [1, 4],
+  boss_school_bus: [2, 5],
+  boss_train_station: [1, 4],
+  boss_trash: [1, 3],
+  boss_warehouse: [3, 4]
+};
+
+export function getBossIdlePair(bossKey: string): readonly [number, number] {
+  return BOSS_IDLE_PAIR_BY_KEY[bossKey] ?? [0, 1];
+}
+
 function pickFrame(names: Set<string>, base: string): string | null {
   if (names.has(`${base}.png`)) return `${base}.png`;
   if (names.has(base)) return base;
@@ -74,11 +106,13 @@ export function ensureAnimations(
         console.warn(`[anims] Skipping ${k}: atlas frames not found`);
         continue;
       }
+      const [a, b] = getBossIdlePair(k);
       upsertAnimation(anims, {
         key: k,
-        frames: buildFrames(names, `${k}_`, 0, 5),
-        frameRate: 4,
-        repeat: -1
+        frames: buildFramesByIndices(names, `${k}_`, [a, b]),
+        frameRate: 2,
+        repeat: -1,
+        yoyo: true
       });
     }
   }

@@ -4,6 +4,7 @@ import { playCue, requestMenuMusic, unlockAudio } from '../audio';
 import { LEVELS } from '../data/levels';
 import { LEVEL_VISUALS, getLevelBg, getLevelBoss } from '../visuals';
 import { atlasFrame, hasAtlasFrame } from '../atlasUtil';
+import { getBossIdlePair } from '../anims';
 import { GAME_CONSTANTS } from '../constants';
 
 // Grid layout constants
@@ -203,7 +204,8 @@ export default class MenuScene extends Phaser.Scene {
     // 3. Boss sprite (only if has atlas frames)
     const bossAnimKey = getLevelBoss(i);
     const isDragon = bossAnimKey === 'dragon';
-    const bossFrame = isDragon ? `${bossAnimKey}_0` : `${bossAnimKey}_1`;
+    const [startIdx] = getBossIdlePair(bossAnimKey);
+    const bossFrame = isDragon ? `${bossAnimKey}_0` : `${bossAnimKey}_${startIdx}`;
     if (hasAtlasFrame(bossFrame)) {
       const bossSprite = this.add.sprite(0, -8, 'atlas', atlasFrame(bossFrame));
       bossSprite.setScale(0.4);
