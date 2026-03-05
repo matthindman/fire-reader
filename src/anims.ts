@@ -1,6 +1,14 @@
 import Phaser from 'phaser';
 import { LEVEL_VISUALS } from './visuals';
 
+function upsertAnimation(
+  anims: Phaser.Animations.AnimationManager,
+  config: Phaser.Types.Animations.Animation & { key: string }
+): void {
+  if (anims.exists(config.key)) anims.remove(config.key);
+  anims.create(config);
+}
+
 function pickFrame(names: Set<string>, base: string): string | null {
   if (names.has(`${base}.png`)) return `${base}.png`;
   if (names.has(base)) return base;
@@ -42,20 +50,17 @@ export function ensureAnimations(
 ) {
   const names = new Set(texture.getFrameNames());
 
-  if (!anims.exists('kid_idle')) {
-    anims.create({
-      key: 'kid_idle',
-      frames: buildFramesByIndices(names, 'kid_idle_', [0, 1, 2, 3]),
-      frameRate: 3,
-      repeat: -1
-    });
-  }
+  upsertAnimation(anims, {
+    key: 'kid_idle',
+    frames: buildFramesByIndices(names, 'kid_idle_', [0, 1, 2, 3]),
+    frameRate: 3,
+    repeat: -1
+  });
 
   const bossKeys = new Set(Object.values(LEVEL_VISUALS).map(v => v.boss));
   for (const k of bossKeys) {
-    if (anims.exists(k)) continue;
     if (k === 'dragon') {
-      anims.create({
+      upsertAnimation(anims, {
         key: 'dragon',
         frames: buildFramesByIndices(names, 'dragon_', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]),
         frameRate: 6,
@@ -65,10 +70,11 @@ export function ensureAnimations(
       // Only create animation if atlas frames exist for this boss
       const testFrame = pickFrame(names, `${k}_0`);
       if (!testFrame) {
+        if (anims.exists(k)) anims.remove(k);
         console.warn(`[anims] Skipping ${k}: atlas frames not found`);
         continue;
       }
-      anims.create({
+      upsertAnimation(anims, {
         key: k,
         frames: buildFrames(names, `${k}_`, 0, 5),
         frameRate: 4,
