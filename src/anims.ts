@@ -8,6 +8,13 @@ function upsertAnimation(
   anims.create(config);
 }
 
+
+// Compatibility shim for stale bundles/dev caches that still import getBossIdlePair.
+// Returning the same frame index keeps old animation callers effectively static.
+export function getBossIdlePair(_bossKey: string): readonly [number, number] {
+  return [1, 1];
+}
+
 function pickFrame(names: Set<string>, base: string): string | null {
   if (names.has(`${base}.png`)) return `${base}.png`;
   if (names.has(base)) return base;
