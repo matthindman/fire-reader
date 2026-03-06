@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { loadProfile, isStorageAvailable } from '../storage';
 import { playCue, requestMenuMusic, unlockAudio } from '../audio';
 import { LEVELS } from '../data/levels';
-import { getLevelBg, getLevelBoss } from '../visuals';
+import { LEVEL_VISUALS, getLevelBg, getLevelBoss } from '../visuals';
 import { atlasFrame, hasAtlasFrame } from '../atlasUtil';
 import { GAME_CONSTANTS } from '../constants';
 
@@ -12,6 +12,8 @@ const CARD_H = 120;
 const GAP = 14;
 const COLS = 5;
 const GRID_LEFT = (960 - (COLS * CARD_W + (COLS - 1) * GAP)) / 2;
+const CARD_INNER_W = CARD_W - 6;
+const CARD_INNER_H = CARD_H - 6;
 
 const TITLE_Y = 40;
 const KID_X = 130;
@@ -206,15 +208,23 @@ export default class MenuScene extends Phaser.Scene {
     const bossIdleAtlasFrame = isDragon ? 'dragon_0' : `${bossKey}_1`;
     const hasBossAtlasFrame = hasAtlasFrame(bossIdleAtlasFrame);
     const hasBossSheet = this.textures.exists(bossKey);
+    const vis = LEVEL_VISUALS[i];
+    const gameplayBossX = vis?.bossX ?? 780;
+    const gameplayBossY = vis?.bossY ?? 310;
+    const gameplayBossScale = vis?.bossScale ?? (isDragon ? 0.72 : 0.56);
+    const menuBossX = -CARD_W / 2 + 3 + CARD_INNER_W * (gameplayBossX / 960);
+    const menuBossY = -CARD_H / 2 + 3 + CARD_INNER_H * (gameplayBossY / 540);
+    const menuBossScale = gameplayBossScale * (CARD_INNER_H / 540) * 1.15 * (isDragon ? 1.1 : 1);
 
     let bossSprite: Phaser.GameObjects.Sprite | undefined;
     if (isDragon && hasBossAtlasFrame) {
-      bossSprite = this.add.sprite(0, -8, 'atlas', atlasFrame(bossIdleAtlasFrame));
-      bossSprite.setScale(0.38);
+      bossSprite = this.add.sprite(menuBossX, menuBossY, 'atlas', atlasFrame(bossIdleAtlasFrame));
+      bossSprite.setOrigin(0.5, 0.9);
+      bossSprite.setScale(menuBossScale);
     } else if (!isDragon && hasBossSheet) {
-      bossSprite = this.add.sprite(0, -8, bossKey, 1);
+      bossSprite = this.add.sprite(menuBossX, menuBossY, bossKey, 1);
       bossSprite.setOrigin(0.5, 1.0);
-      bossSprite.setScale(0.24);
+      bossSprite.setScale(menuBossScale);
     }
 
     if (bossSprite) {
